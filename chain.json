@@ -1,0 +1,14 @@
+{
+  "name": "GameOfAnhui",
+  "link": "https://github.com/just-anohaker/GameOfAnhui.zip",
+  "desc": "game of anhui kuai 3",
+  "icon": "https://github.com/just-anohaker/GameOfAnhui.png",
+  "delegates": [
+    "55599b72e3c3b5de4c9b7c88805924c70ebc157132093ff4a9aab753482a882b",
+    "eeed333bc83bb680b4a23fbde75221eccec7e2bd63caf596b0f89cbeb47da254",
+    "99c22c0d62791a70a8bcae24aa7e5f6fd2cbacfc0080f291a7cbd8ee2f9c7c1e",
+    "81fe00e3ec7508b528b30b39fb53037169730a7298ef508504014c98793f9d8b",
+    "44e689c16ff4597d27dff6a86efd50a98a1c5853b255444fb76066673b86066e"
+  ],
+  "unlockDelegates": 3
+}
