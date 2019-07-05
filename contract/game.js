@@ -16,7 +16,7 @@ module.exports = {
         app.sdb.lock("game.period@" + periodId);
         let exists = await app.model.Period.exists({ id: this.trs.id, periodId });
         if (exists) return `periodId(${periodId}) already started.`;
-        app.sdb.create("GamePeriod", {
+        app.sdb.create("Game Period", {
             id: this.trs.id,
             periodId,
             status: 0
