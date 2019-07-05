@@ -1,7 +1,7 @@
 "use strict";
 
 module.exports = {
-    name: "rewards",
+    name: "game_rewards",
     fields: [
         {
             name: "periodId",
