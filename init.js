@@ -3,9 +3,9 @@ module.exports = async function () {
 
     // contract account
     app.registerFee(1000, 0);
-    app.registerContract(1000, "accounts.deposit");
+    app.registerContract(1000, "account.deposit");
     app.registerFee(1001, 0);
-    app.registerContract(1001, "accounts.withdrawal");
+    app.registerContract(1001, "account.withdrawal");
 
     // contract game
     app.registerFee(1100, 0);
