@@ -14,8 +14,8 @@ module.exports = {
         console.log("app.sdb.indexSchema:", JSON.stringify(indexSchemaKeys, null, 2));
 
         app.sdb.lock("game.period@" + periodId);
-        let exists = await app.model.Period.exists({ tid: this.trs.id, periodId });
-        if (exists) return `periodId(${periodId}) already started.`;
+        // let exists = await app.model.Period.exists({ tid: this.trs.id, periodId });
+        // if (exists) return `periodId(${periodId}) already started.`;
         app.sdb.create("game_period", {
             tid: this.trs.id,
             periodId,
