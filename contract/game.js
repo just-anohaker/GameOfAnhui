@@ -14,7 +14,7 @@ module.exports = {
         console.log("app.sdb.indexSchema:", JSON.stringify(indexSchemaKeys, null, 2));
 
         app.sdb.lock("game.period@" + periodId);
-        let exists = await app.model.Period.exists({ id: this.trs.id, periodId });
+        let exists = await app.model.Period.exists({ tid: this.trs.id, periodId });
         if (exists) return `periodId(${periodId}) already started.`;
         app.sdb.create("game_period", {
             tid: this.trs.id,
@@ -31,7 +31,7 @@ module.exports = {
     mothball_period: async function (periodId) {
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.GamePeriod.findAll({
-            fields: ["id", "status"],
+            fields: ["tid", "status"],
             condition: { periodId }
         });
         if (found.length != 1) return `periodId(${periodId}) not exists.`;
@@ -44,7 +44,7 @@ module.exports = {
     end_period: async function (periodId, points) {
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.GamePeriod.findAll({
-            fields: ["id", "status"],
+            fields: ["tid", "status"],
             condition: { periodId }
         });
         if (found.length !== 1) return `periodId(${periodId}) not exists.`;
