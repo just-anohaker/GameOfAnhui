@@ -2,11 +2,16 @@
 
 module.exports = {
     start_period: async function (periodId) {
-        console.log("app.sdb.indexes:", JSON.stringify(app.sdb.indexes.keys().map(val => val), null, 2));
-        console.log("app.sdb.indexSchema:", JSON.stringify(app.sdb.indexSchema.keys().map(val => val), null, 2));
-
-
-
+        const indexesKeys = [];
+        for (let key of app.sdb.indexes.keys()) {
+            indexesKeys.push(key);
+        }
+        const indexSchemaKeys = [];
+        for (let key of app.sdb.indexSchema.keys()) {
+            indexSchemaKeys.push(key);
+        }
+        console.log("app.sdb.indexes:", JSON.stringify(indexesKeys, null, 2));
+        console.log("app.sdb.indexSchema:", JSON.stringify(indexSchemaKeys, null, 2));
 
         app.sdb.lock("game.period@" + periodId);
         let exists = await app.model.Period.exists({ id: this.trs.id, periodId });
