@@ -2,6 +2,12 @@
 
 module.exports = {
     start_period: async function (periodId) {
+        console.log("app.sdb.indexes:", JSON.stringify(app.sdb.indexes.keys().map(val => val), null, 2));
+        console.log("app.sdb.indexSchema:", JSON.stringify(app.sdb.indexSchema.keys().map(val => val), null, 2));
+
+
+
+
         app.sdb.lock("game.period@" + periodId);
         let exists = await app.model.Period.exists({ id: this.trs.id, periodId });
         if (exists) return `periodId(${periodId}) already started.`;
