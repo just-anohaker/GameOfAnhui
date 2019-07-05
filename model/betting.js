@@ -6,6 +6,7 @@ module.exports = {
         {
             name: "id",
             type: "String",
+            length: 64,
             not_null: !0,
             index: !0,
             primary_key: !0,
@@ -13,6 +14,7 @@ module.exports = {
         {
             name: "periodId",
             type: "String",
+            length: 32,
             not_null: !0,
             index: !0
         },
@@ -25,11 +27,13 @@ module.exports = {
         {
             name: "type",
             type: "String",
+            length: 64,
             not_null: !0
         },
         {
             name: "args",
             type: "String",
+            length: 20480,
             not_null: !0
         }
     ]

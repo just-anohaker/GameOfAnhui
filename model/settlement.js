@@ -6,6 +6,7 @@ module.exports = {
         {
             name: "id",
             type: "String",
+            length: 64,
             not_null: !0
         },
         {

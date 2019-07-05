@@ -6,6 +6,7 @@ module.exports = {
         {
             name: "periodId",
             type: "String",
+            length: 32,
             not_null: !0,
             index: !0
         },
