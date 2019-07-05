@@ -4,10 +4,11 @@ module.exports = {
     name: "game_periods",
     fields: [
         {
-            name: "id",
+            name: "tid",
             type: "String",
             length: 64,
             not_null: !0,
+            unique: !0,
             primary_key: !0
         },
         {
@@ -15,7 +16,7 @@ module.exports = {
             type: "String",
             length: 32,
             not_null: !0,
-            index: !0
+            unique: !0
         },
         {
             name: "status",

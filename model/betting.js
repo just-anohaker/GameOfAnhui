@@ -4,11 +4,12 @@ module.exports = {
     name: "game_bettings",
     fields: [
         {
-            name: "id",
+            name: "tid",
             type: "String",
             length: 64,
             not_null: !0,
             index: !0,
+            unique: !0,
             primary_key: !0,
         },
         {

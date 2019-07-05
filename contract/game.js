@@ -17,7 +17,7 @@ module.exports = {
         let exists = await app.model.Period.exists({ id: this.trs.id, periodId });
         if (exists) return `periodId(${periodId}) already started.`;
         app.sdb.create("game_period", {
-            id: this.trs.id,
+            tid: this.trs.id,
             periodId,
             status: 0
         });
@@ -37,7 +37,7 @@ module.exports = {
         if (found.length != 1) return `periodId(${periodId}) not exists.`;
         if (found[0].status !== 0) return `periodId(${periodId}) not in started status.`;
 
-        app.sdb.update("game_period", { status: 1 }, { id: found[0].id, periodId });
+        app.sdb.update("game_period", { status: 1 }, { tid: found[0].id, periodId });
         // return "Contract[mothball_period] not implemented.";
     },
 
@@ -51,7 +51,7 @@ module.exports = {
         if (found[0].status !== 1) return `periodId(${periodId}) not in mothball_period status.`;
 
         app.sdb.update("game_period", { status: 2, point_sequences: JSON.stringify(points.map(val => val.toString())) },
-            { id: found[0].id, periodId });
+            { tid: found[0].id, periodId });
         // return "Contract[end_period] not implemented.";
     }
 }
