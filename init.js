@@ -1,5 +1,11 @@
+"use strict";
+
+const GameRules = require("./helpers/game_rules/game");
+
 module.exports = async function () {
     console.log('enter dapp[AnHui_Kuai3] init')
+
+    app.gameRules = new GameRules();
 
     // contract account
     app.registerFee(1000, 0);

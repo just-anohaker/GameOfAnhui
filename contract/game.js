@@ -2,9 +2,9 @@
 
 module.exports = {
     start_period: async function (periodId) {
-        let periodChecker;
-        if (periodChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
-            return periodChecker;
+        let periodIdChecker;
+        if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return JSON.stringify(periodIdChecker);
         }
 
         const indexesKeys = [];
@@ -49,18 +49,30 @@ module.exports = {
             key: `period-${periodId}`,
             value: periodId
         });
+        return app.gameRules.beginPeriod(periodId);
         // return "Contract[start_period] not implemented.";
     },
 
-    betting: async function () {
-        return "Contract[betting] not implemented.";
+    betting: async function (periodId, type, args) {
+        let periodIdChecker, typeChecker;
+        if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return JSON.stringify(periodIdChecker);
+        }
+        if (!/^[1-9][0-9]*$/.test(type)) {
+            typeChecker = "type must be integer";
+            return JSON.stringify(typeChecker);
+        }
+
+        return app.gameRules.appendBetting(periodId, type, args);
+        // return "Contract[betting] not implemented.";
     },
 
     mothball_period: async function (periodId) {
-        let periodChecker;
-        if (periodChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
-            return periodChecker;
+        let periodIdChecker;
+        if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return JSON.stringify(periodIdChecker);
         }
+
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.Period.findAll({
             fields: ["tid", "status"],
@@ -74,17 +86,19 @@ module.exports = {
         }
 
         app.sdb.update("game_period", { status: 1 }, { tid: found[0].tid, periodId });
+        return app.gameRules.mothballPeriod(periodId);
         // return "Contract[mothball_period] not implemented.";
     },
 
     end_period: async function (periodId, points) {
-        let periodChecker, pointsChecker;
-        if (periodChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
-            return periodChecker;
+        let periodIdChecker, pointsChecker;
+        if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return JSON.stringify(periodIdChecker);
         }
         if (pointsChecker = app.validate("array", points, { length: 3 })) {
-            return pointsChecker;
+            return JSON.stringify(pointsChecker);
         }
+
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.Period.findAll({
             fields: ["tid", "status"],
@@ -114,6 +128,7 @@ module.exports = {
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { tid: found[0].tid, periodId });
         app.sdb.del("variable", { key: currentPeriod[0].key });
+        return app.gameRules.endPeriod(periodId, points);
         // return "Contract[end_period] not implemented.";
     }
 }
