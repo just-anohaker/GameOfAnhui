@@ -75,7 +75,10 @@ module.exports = {
         }
 
         app.sdb.update("game_period",
-            { status: 2, point_sequences: JSON.stringify(points.map(val => val.toString())) },
+            { status: 2 },
+            { tid: found[0].tid, periodId });
+        app.sdb.update("game_period",
+            { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { tid: found[0].tid, periodId });
         app.sdb.del("game_period", { key: "period" })
         // return "Contract[end_period] not implemented.";
