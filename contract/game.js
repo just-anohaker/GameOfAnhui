@@ -27,7 +27,7 @@ module.exports = {
             console.log(msg);
             return msg;
         }
-        let exists = await app.model.Period.exists({ periodId });
+        let exists = await app.model.GamePeriod.exists({ periodId });
         if (exists) {
             return `period(${periodId}) already exists.`;
         }
@@ -73,7 +73,7 @@ module.exports = {
         }
 
         app.sdb.lock("game.period@" + periodId);
-        let found = await app.model.Period.findAll({
+        let found = await app.model.GamePeriod.findAll({
             fields: ["status"],
             condition: { periodId }
         });
@@ -106,7 +106,7 @@ module.exports = {
         }
 
         app.sdb.lock("game.period@" + periodId);
-        let found = await app.model.Period.findAll({
+        let found = await app.model.GamePeriod.findAll({
             fields: ["status"],
             condition: { periodId }
         });

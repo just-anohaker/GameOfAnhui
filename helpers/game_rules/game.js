@@ -28,7 +28,7 @@ class GameRules {
             });
             if (period == null) break;
 
-            const [periodInfo = null] = await app.model.Period.findAll({
+            const [periodInfo = null] = await app.model.GamePeriod.findAll({
                 fields: ["periodId", "begin_tid", "mothball_tid", "end_tid", "status"],
                 condition: { periodId: period.value }
             });
@@ -78,11 +78,8 @@ class GameRules {
         }
 
         const modeList = ["1", "2", "3", "4", "5"];
-        const [{ amount = "" }] = await app.model.Reward.findAll({
-            fields: ["amount"],
-            condition: { periodId }
-        });
-        let bnum = bignum(amount);
+        const amount = app.sdb.get("GameReward", { periodId });
+        let bnum = bignum(amount || "0");
         for (let i = 0; i < betOrders.length; i++) {
             const order = betOrders[i];
             const { mode = null, point = null, amount = null } = betOrders[i];
