@@ -2,6 +2,11 @@
 
 module.exports = {
     start_period: async function (periodId) {
+        let periodChecker;
+        if (periodChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return periodChecker;
+        }
+
         const indexesKeys = [];
         for (let key of app.sdb.indexes.keys()) {
             indexesKeys.push(key);
@@ -52,6 +57,10 @@ module.exports = {
     },
 
     mothball_period: async function (periodId) {
+        let periodChecker;
+        if (periodChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return periodChecker;
+        }
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.Period.findAll({
             fields: ["tid", "status"],
@@ -69,6 +78,13 @@ module.exports = {
     },
 
     end_period: async function (periodId, points) {
+        let periodChecker, pointsChecker;
+        if (periodChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
+            return periodChecker;
+        }
+        if (pointsChecker = app.validate("array", points, { length: 3 })) {
+            return pointsChecker;
+        }
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.Period.findAll({
             fields: ["tid", "status"],
