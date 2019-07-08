@@ -36,6 +36,10 @@ module.exports = {
             begin_tid: this.trs.id,
             status: 0
         });
+        app.sdb.create("game_reward", {
+            periodId,
+            amount: "0"
+        });
         app.sdb.create("variable", {
             key: `period-${periodId}`,
             value: periodId
