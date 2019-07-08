@@ -57,7 +57,7 @@ module.exports = {
             return `period(${periodId}) not in started status.`;
         }
 
-        app.sdb.update("game_period", { status: 1 }, { tid: found[0].id, periodId });
+        app.sdb.update("game_period", { status: 1 }, { tid: found[0].tid, periodId });
         // return "Contract[mothball_period] not implemented.";
     },
 
@@ -74,8 +74,9 @@ module.exports = {
             return `period(${periodId}) not in mothball_period status.`;
         }
 
-        app.sdb.update("game_period", { status: 2, point_sequences: JSON.stringify(points.map(val => val.toString())) },
-            { tid: found[0].id, periodId });
+        app.sdb.update("game_period",
+            { status: 2, point_sequences: JSON.stringify(points.map(val => val.toString())) },
+            { tid: found[0].tid, periodId });
         // return "Contract[end_period] not implemented.";
     }
 }
