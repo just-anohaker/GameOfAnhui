@@ -1,6 +1,7 @@
 "use strict";
 
 const Validate = require("validate.js");
+const BigNumber = require("bignumber");
 
 const PeriodBegin = "period_begin";
 const PeriodMothball = "period_mothball";
@@ -74,9 +75,24 @@ class GameRules {
             return `period(${this.periodInfo.period}) is finished.`;
         }
 
-        betOrders.forEach(val => {
+        const modeList = ["1", "2", "3", "4", "5"];
+        for (let i = 0; i < betOrders.length; i++) {
+            const order = betOrders[i];
+            const { mode = null, point = null, amount = null } = betOrders[i];
+            if (!Validate.isInteger(Number(mode)) || !Validate.isInteger(Number(point))) {
+                return "order must contains mode, point all in string type with number format.";
+            }
+            try {
+                BigNumber(amount)
+            } catch (error) {
+                return "order must contains amount in string type with bignumber format";
+            }
+            if (!modeList.includes(mode)) {
+                return `unsupported mode(${mode}), validable modes(${modeList})`;
+            }
 
-        });
+            // check balance
+        }
 
         app.sdb.create("game_betting", {
             tid: trs.id,

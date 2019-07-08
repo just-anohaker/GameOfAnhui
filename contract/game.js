@@ -57,16 +57,6 @@ module.exports = {
         if (!Validate.isArray(betOrders)) {
             return JSON.stringify("betOrders must be array.");
         }
-        let validateMsg = null;
-        for (let i = 0; i < betOrders.length; i++) {
-            if (!(validateMsg = Validate(betOrders[i], {
-                mode: { type: "string", presence: true, inclusion: ["1", "2", "3", "4", "5"] },
-                point: { type: "string", presence: true, format: /[0-9]+/ },
-                amount: { type: "string", presence: true, format: /[1-9][0-9]*/ }
-            }))) {
-                return JSON.stringify(validateMsg);
-            }
-        }
 
         return app.gameRules.appendBetting(periodId, betOrders, this.trs, this.block);
         // return "Contract[betting] not implemented.";
