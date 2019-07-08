@@ -78,8 +78,8 @@ class GameRules {
         }
 
         const modeList = ["1", "2", "3", "4", "5"];
-        const amount = app.sdb.get("GameReward", { periodId });
-        let bnum = bignum(amount || "0");
+        const { amount = "0" } = app.sdb.get("GameReward", { periodId });
+        let bnum = bignum(amount);
         for (let i = 0; i < betOrders.length; i++) {
             const order = betOrders[i];
             const { mode = null, point = null, amount = null } = betOrders[i];
