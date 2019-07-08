@@ -2,10 +2,13 @@
 
 const GameRules = require("./helpers/game_rules/game");
 
+const Rule = require("./helpers/game_rules/rules/base_rule");
+
 module.exports = async function () {
     console.log('enter dapp[AnHui_Kuai3] init')
 
     app.gameRules = new GameRules();
+    app.gameRules.registerGameType(10, new Rule());
 
     // contract account
     app.registerFee(1000, 0);
