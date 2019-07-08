@@ -6,13 +6,13 @@ class Rule {
     }
 
     appendBetting(periodId, type, args, trs, block) {
-        app.sdb.create("betting", {
+        app.sdb.create("game_betting", {
             tid: trs.id,
             periodId,
             address: trs.senderId,
             type,
             args: JSON.stringify(args),
-        })
+        });
     }
 
     beginPeriod(periodId, trs, block) {

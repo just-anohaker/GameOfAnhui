@@ -7,17 +7,6 @@ module.exports = {
             return JSON.stringify(periodIdChecker);
         }
 
-        const indexesKeys = [];
-        for (let key of app.sdb.indexes.keys()) {
-            indexesKeys.push(key);
-        }
-        const indexSchemaKeys = [];
-        for (let key of app.sdb.indexSchema.keys()) {
-            indexSchemaKeys.push(key);
-        }
-        console.log("app.sdb.indexes:", JSON.stringify(indexesKeys, null, 2));
-        console.log("app.sdb.indexSchema:", JSON.stringify(indexSchemaKeys, null, 2));
-
         app.sdb.lock("game.period@" + periodId);
         const variableCount = await app.model.Variable.count({ key: { $like: "period-%" } });
         if (variableCount > 1) {
