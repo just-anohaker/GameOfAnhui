@@ -9,7 +9,9 @@ class GameRules {
         this.gameInsts = new Map();
 
         this.periodInfo = null; // {period, status, height}
+    }
 
+    async _init() {
         // init
         do {
             const count = await app.model.Variable.count({ key: { $like: "period-%" } });

@@ -8,6 +8,7 @@ module.exports = async function () {
     console.log('enter dapp[AnHui_Kuai3] init')
 
     app.gameRules = new GameRules();
+    await app.gameRules._init();
     app.gameRules.registerGameType(10, new Rule());
 
     // contract account
