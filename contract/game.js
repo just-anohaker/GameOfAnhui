@@ -103,7 +103,7 @@ module.exports = {
 
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.Period.findAll({
-            fields: ["tid", "status"],
+            fields: ["status"],
             condition: { periodId }
         });
         if (found.length !== 1) {
