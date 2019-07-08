@@ -106,7 +106,7 @@ class GameRules {
             bnum = bnum.plus(amount);
         }
 
-        app.sdb.update("Reward", { amount: bnum.toString() }, { periodId });
+        app.sdb.update("GameReward", { amount: bnum.toString() }, { periodId });
         app.sdb.create("game_betting", {
             tid: trs.id,
             periodId,

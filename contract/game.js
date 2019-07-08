@@ -36,11 +36,11 @@ module.exports = {
             begin_tid: this.trs.id,
             status: 0
         });
-        app.sdb.create("Reward", {
+        app.sdb.create("GameReward", {
             periodId,
             amount: "0"
         });
-        app.sdb.create("variable", {
+        app.sdb.create("Variable", {
             key: `period-${periodId}`,
             value: periodId
         });
@@ -139,7 +139,7 @@ module.exports = {
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { periodId }
         );
-        app.sdb.del("variable", { key: currentPeriod[0].key });
+        app.sdb.del("Variable", { key: currentPeriod[0].key });
         return await app.gameRules.endPeriod(periodId, points, this.trs, this.block);
         // return "Contract[end_period] not implemented.";
     }
