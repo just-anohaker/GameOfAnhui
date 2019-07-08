@@ -49,7 +49,7 @@ module.exports = {
             key: `period-${periodId}`,
             value: periodId
         });
-        return app.gameRules.beginPeriod(periodId);
+        return app.gameRules.beginPeriod(periodId, this.trs, this.block);
         // return "Contract[start_period] not implemented.";
     },
 
@@ -63,7 +63,7 @@ module.exports = {
             return JSON.stringify(typeChecker);
         }
 
-        return app.gameRules.appendBetting(periodId, type, args);
+        return app.gameRules.appendBetting(periodId, type, args, this.trs, this.block);
         // return "Contract[betting] not implemented.";
     },
 
@@ -86,7 +86,7 @@ module.exports = {
         }
 
         app.sdb.update("game_period", { status: 1 }, { tid: found[0].tid, periodId });
-        return app.gameRules.mothballPeriod(periodId);
+        return app.gameRules.mothballPeriod(periodId, this.trs, this.block);
         // return "Contract[mothball_period] not implemented.";
     },
 
@@ -128,7 +128,7 @@ module.exports = {
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { tid: found[0].tid, periodId });
         app.sdb.del("variable", { key: currentPeriod[0].key });
-        return app.gameRules.endPeriod(periodId, points);
+        return app.gameRules.endPeriod(periodId, points, this.trs, this.block);
         // return "Contract[end_period] not implemented.";
     }
 }
