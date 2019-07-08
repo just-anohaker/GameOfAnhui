@@ -46,7 +46,7 @@ module.exports = {
 
     mothball_period: async function (periodId) {
         app.sdb.lock("game.period@" + periodId);
-        let found = await app.model.GamePeriod.findAll({
+        let found = await app.model.Period.findAll({
             fields: ["tid", "status"],
             condition: { periodId }
         });
@@ -63,7 +63,7 @@ module.exports = {
 
     end_period: async function (periodId, points) {
         app.sdb.lock("game.period@" + periodId);
-        let found = await app.model.GamePeriod.findAll({
+        let found = await app.model.Period.findAll({
             fields: ["tid", "status"],
             condition: { periodId }
         });
