@@ -14,12 +14,28 @@ module.exports = {
         console.log("app.sdb.indexSchema:", JSON.stringify(indexSchemaKeys, null, 2));
 
         app.sdb.lock("game.period@" + periodId);
-        // let exists = await app.model.Period.exists({ tid: this.trs.id, periodId });
-        // if (exists) return `periodId(${periodId}) already started.`;
+        const variableExists = await app.model.Variable.exists({ key: "period" });
+        if (variableExists) {
+            const currentPeriod = await app.model.Variable.findAll({
+                fields: ["value"],
+                condition: { key: "period" }
+            });
+            const msg = `period(${currentPeriod[0].value}) is in processing`;
+            console.log(msg);
+            return msg;
+        }
+        let exists = await app.model.Period.exists({ periodId });
+        if (exists) {
+            return `period(${periodId}) already exists.`;
+        }
         app.sdb.create("game_period", {
             tid: this.trs.id,
             periodId,
             status: 0
+        });
+        app.sdb.create("variable", {
+            key: "period",
+            value: periodId
         });
         // return "Contract[start_period] not implemented.";
     },
@@ -34,8 +50,12 @@ module.exports = {
             fields: ["tid", "status"],
             condition: { periodId }
         });
-        if (found.length != 1) return `periodId(${periodId}) not exists.`;
-        if (found[0].status !== 0) return `periodId(${periodId}) not in started status.`;
+        if (found.length != 1) {
+            return `period(${periodId}) not exists.`;
+        }
+        if (found[0].status !== 0) {
+            return `period(${periodId}) not in started status.`;
+        }
 
         app.sdb.update("game_period", { status: 1 }, { tid: found[0].id, periodId });
         // return "Contract[mothball_period] not implemented.";
@@ -47,8 +67,12 @@ module.exports = {
             fields: ["tid", "status"],
             condition: { periodId }
         });
-        if (found.length !== 1) return `periodId(${periodId}) not exists.`;
-        if (found[0].status !== 1) return `periodId(${periodId}) not in mothball_period status.`;
+        if (found.length !== 1) {
+            return `period(${periodId}) not exists.`;
+        }
+        if (found[0].status !== 1) {
+            return `period(${periodId}) not in mothball_period status.`;
+        }
 
         app.sdb.update("game_period", { status: 2, point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { tid: found[0].id, periodId });
