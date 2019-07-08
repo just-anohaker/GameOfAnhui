@@ -14,11 +14,18 @@ module.exports = {
         console.log("app.sdb.indexSchema:", JSON.stringify(indexSchemaKeys, null, 2));
 
         app.sdb.lock("game.period@" + periodId);
-        const variableExists = await app.model.Variable.exists({ key: "period" });
-        if (variableExists) {
+        const variableCount = await app.model.Variable.count({ key: { $like: "period-%" } });
+        if (variableCount > 1) {
+            const msg = `variable period record count(${variableCount}), in Exception.`;
+            console.log(msg);
+            return msg;
+        }
+        if (variableCount === 1) {
             const currentPeriod = await app.model.Variable.findAll({
-                fields: ["value"],
-                condition: { key: "period" }
+                fields: ["key", "value"],
+                condition: {
+                    key: { $like: "period-%" }
+                }
             });
             const msg = `period(${currentPeriod[0].value}) is in processing`;
             console.log(msg);
@@ -34,7 +41,7 @@ module.exports = {
             status: 0
         });
         app.sdb.create("variable", {
-            key: "period",
+            key: `period-${periodId}`,
             value: periodId
         });
         // return "Contract[start_period] not implemented.";
@@ -74,13 +81,23 @@ module.exports = {
             return `period(${periodId}) not in mothball_period status.`;
         }
 
+        const currentPeriod = await app.model.Variable.findAll({
+            fields: ["key", "value"],
+            condition: {
+                key: { $like: "period-%" }
+            }
+        });
+        if (currentPeriod.length !== 1) {
+            return "Exception: variable record period more than one";
+        }
+
         app.sdb.update("game_period",
             { status: 2 },
             { tid: found[0].tid, periodId });
         app.sdb.update("game_period",
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { tid: found[0].tid, periodId });
-        app.sdb.del("variable", { key: "period" })
+        app.sdb.del("variable", { key: currentPeriod[0].key, value: currentPeriod[0].value });
         // return "Contract[end_period] not implemented.";
     }
 }
