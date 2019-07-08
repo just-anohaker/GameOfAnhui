@@ -4,18 +4,29 @@ module.exports = {
     name: "game_periods",
     fields: [
         {
-            name: "tid",
-            type: "String",
-            length: 64,
-            not_null: !0,
-            unique: !0,
-            primary_key: !0
-        },
-        {
             name: "periodId",
             type: "String",
             length: 32,
             not_null: !0,
+            unique: !0,
+            primary_key: !0,
+        },
+        {
+            name: "begin_tid",
+            type: "String",
+            length: 64,
+            unique: !0
+        },
+        {
+            name: "mothball_tid",
+            type: "String",
+            length: 64,
+            unique: !0
+        },
+        {
+            name: "end_tid",
+            type: "String",
+            length: 64,
             unique: !0
         },
         {

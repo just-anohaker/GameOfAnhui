@@ -41,8 +41,8 @@ module.exports = {
             return `period(${periodId}) already exists.`;
         }
         app.sdb.create("game_period", {
-            tid: this.trs.id,
             periodId,
+            begin_tid: this.trs.id,
             status: 0
         });
         app.sdb.create("variable", {
@@ -75,7 +75,7 @@ module.exports = {
 
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.Period.findAll({
-            fields: ["tid", "status"],
+            fields: ["status"],
             condition: { periodId }
         });
         if (found.length != 1) {
@@ -85,7 +85,14 @@ module.exports = {
             return `period(${periodId}) not in started status.`;
         }
 
-        app.sdb.update("game_period", { status: 1 }, { tid: found[0].tid, periodId });
+        app.sdb.update("game_period",
+            { status: 1 },
+            { periodId }
+        );
+        app.sdb.update("game_period",
+            { mothball_tid: this.trs.id },
+            { periodId }
+        );
         return app.gameRules.mothballPeriod(periodId, this.trs, this.block);
         // return "Contract[mothball_period] not implemented.";
     },
@@ -123,10 +130,16 @@ module.exports = {
 
         app.sdb.update("game_period",
             { status: 2 },
-            { tid: found[0].tid, periodId });
+            { periodId }
+        );
+        app.sdb.update("game_period",
+            { end_tid: this.trs.id },
+            { periodId }
+        );
         app.sdb.update("game_period",
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
-            { tid: found[0].tid, periodId });
+            { periodId }
+        );
         app.sdb.del("variable", { key: currentPeriod[0].key });
         return app.gameRules.endPeriod(periodId, points, this.trs, this.block);
         // return "Contract[end_period] not implemented.";

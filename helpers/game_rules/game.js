@@ -11,6 +11,56 @@ class GameRules {
         this.periodInfo = null; // {period, status, height}
 
         // init
+        do {
+            const count = await app.model.Variable.count({ key: { $like: "period-%" } });
+            if (count !== 1) break;
+
+            const [period = null] = await app.model.Variable.findAll({
+                fields: ["key", "value"],
+                condition: {
+                    key: { $like: "period-%" }
+                }
+            });
+            if (period == null) break;
+
+            const [periodInfo = null] = await app.model.Period.findAll({
+                fields: ["periodId", "begin_tid", "mothball_tid", "end_tid", "status"],
+                condition: { periodId: period.value }
+            });
+            if (periodInfo == null) break;
+
+            if (periodInfo.status === 0 && periodInfo.begin_tid != null) {
+                const [trInfo = null] = app.model.Transaction.findAll({
+                    fields: ["height"],
+                    condition: { id: periodInfo.begin_tid }
+                });
+                if (trInfo == null) {
+                    break;
+                }
+                this.periodInfo = { period: period.value, status: PeriodBegin, height: trInfo.height };
+            } else if (periodInfo.status === 1 && periodInfo.mothball_tid != null) {
+                const [trInfo = null] = app.model.Transaction.findAll({
+                    fields: ["height"],
+                    condition: { id: periodInfo.mothball_tid }
+                });
+                if (trInfo == null) {
+                    break;
+                }
+                this.periodInfo = { period: period.value, status: PeriodMothball, height: trInfo.height };
+            } else if (periodInfo.status === 2 && periodInfo.end_tid != null) {
+                const [trInfo = null] = app.model.Transaction.findAll({
+                    fields: ["height"],
+                    condition: { id: periodInfo.end_tid }
+                });
+                if (trInfo == null) {
+                    break;
+                }
+                this.periodInfo = { period: period.value, status: PeriodEnd, height: trInfo.height };
+            } else {
+                break;
+            }
+        } while (false);
+        console.log("[GameRule] init:", this.periodInfo);
     }
 
     registerGameType(type, inst) {
