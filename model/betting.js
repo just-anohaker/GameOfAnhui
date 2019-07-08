@@ -26,13 +26,7 @@ module.exports = {
             not_null: !0
         },
         {
-            name: "type",
-            type: "String",
-            length: 64,
-            not_null: !0
-        },
-        {
-            name: "args",
+            name: "betOrders",
             type: "String",
             length: 20480,
             not_null: !0

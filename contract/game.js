@@ -1,5 +1,7 @@
 "use strict";
 
+const Validate = require("validate.js");
+
 module.exports = {
     start_period: async function (periodId) {
         let periodIdChecker;
@@ -42,17 +44,31 @@ module.exports = {
         // return "Contract[start_period] not implemented.";
     },
 
-    betting: async function (periodId, type, args) {
-        let periodIdChecker, typeChecker;
+    /**
+     * 
+     * @param {*} periodId 
+     * @param {*} betOrders - [{mode, point, amount}]
+     */
+    betting: async function (periodId, betOrders) {
+        let periodIdChecker;
         if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
             return JSON.stringify(periodIdChecker);
         }
-        if (!/^[1-9][0-9]*$/.test(type)) {
-            typeChecker = "type must be integer";
-            return JSON.stringify(typeChecker);
+        if (!Validate.isArray(betOrders)) {
+            return JSON.stringify("betOrders must be array.");
+        }
+        let validateMsg = null;
+        for (let i = 0; i < betOrders.length; i++) {
+            if (!(validateMsg = Validate(betOrders[i], {
+                mode: { type: "string", presence: true, inclusion: ["1", "2", "3", "4", "5"] },
+                point: { type: "string", presence: true, format: /[0-9]+/ },
+                amount: { type: "string", presence: true, format: /[1-9][0-9]*/ }
+            }))) {
+                return JSON.stringify(validateMsg);
+            }
         }
 
-        return app.gameRules.appendBetting(periodId, type, args, this.trs, this.block);
+        return app.gameRules.appendBetting(periodId, betOrders, this.trs, this.block);
         // return "Contract[betting] not implemented.";
     },
 

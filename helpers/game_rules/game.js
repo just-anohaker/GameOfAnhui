@@ -1,13 +1,13 @@
 "use strict";
 
+const Validate = require("validate.js");
+
 const PeriodBegin = "period_begin";
 const PeriodMothball = "period_mothball";
 const PeriodEnd = "period_end";
 
 class GameRules {
     constructor() {
-        this.gameInsts = new Map();
-
         this.periodInfo = null; // {period, status, height}
     }
 
@@ -35,37 +35,12 @@ class GameRules {
             if (periodInfo.status === 0 && periodInfo.begin_tid != null) {
                 status = PeriodBegin;
                 trId = periodInfo.begin_tid;
-
-                // const [trInfo = null] = app.model.Transaction.findAll({
-                //     fields: ["height"],
-                //     condition: { id: periodInfo.begin_tid }
-                // });
-                // if (trInfo == null) {
-                //     break;
-                // }
-                // this.periodInfo = { period: period.value, status: PeriodBegin, height: trInfo.height };
             } else if (periodInfo.status === 1 && periodInfo.mothball_tid != null) {
                 status = PeriodMothball;
                 trId = periodInfo.mothball_tid;
-                // const [trInfo = null] = app.model.Transaction.findAll({
-                //     fields: ["height"],
-                //     condition: { id: periodInfo.mothball_tid }
-                // });
-                // if (trInfo == null) {
-                //     break;
-                // }
-                // this.periodInfo = { period: period.value, status: PeriodMothball, height: trInfo.height };
             } else if (periodInfo.status === 2 && periodInfo.end_tid != null) {
                 status = PeriodEnd;
                 trId = periodInfo.end_tid;
-                // const [trInfo = null] = app.model.Transaction.findAll({
-                //     fields: ["height"],
-                //     condition: { id: periodInfo.end_tid }
-                // });
-                // if (trInfo == null) {
-                //     break;
-                // }
-                // this.periodInfo = { period: period.value, status: PeriodEnd, height: trInfo.height };
             }
             if (status != null && trId != null) {
                 const [trInfo = null] = await app.model.Transaction.findAll({
@@ -80,18 +55,7 @@ class GameRules {
         console.log("[GameRule] init:", this.periodInfo);
     }
 
-    registerGameType(type, inst) {
-        if (!this.gameInsts.has(type)) {
-            this.gameInsts.set(type, inst);
-        }
-    }
-
-    appendBetting(periodId, type, args, trs, block) {
-        const inst = this.gameInsts.get(type);
-        if (!inst) {
-            return `unsupported game type(${type})`;
-        }
-
+    appendBetting(periodId, betOrders, trs, block) {
         if (this.periodInfo == null) {
             return `not in period now.`;
         }
@@ -110,28 +74,28 @@ class GameRules {
             return `period(${this.periodInfo.period}) is finished.`;
         }
 
-        return inst.appendBetting(periodId, type, args, trs, block);
+        betOrders.forEach(val => {
+
+        });
+
+        app.sdb.create("game_betting", {
+            tid: trs.id,
+            periodId,
+            address: trs.senderId,
+            orders: JSON.stringify(betOrders)
+        });
     }
 
     beginPeriod(periodId, trs, block) {
         this.periodInfo = { period: periodId, status: PeriodBegin, height: block.height };
-        this.gameInsts.forEach(inst => {
-            inst.beginPeriod(periodId, trs, block);
-        });
     }
 
     mothballPeriod(periodId, trs, block) {
         this.periodInfo = { period: periodId, status: PeriodMothball, height: block.height };
-        this.gameInsts.forEach(inst => {
-            inst.mothballPeriod(periodId, trs, block);
-        });
     }
 
     endPeriod(periodId, points, trs, block) {
         this.periodInfo = { period: periodId, status: PeriodEnd, height: block.height };
-        this.gameInsts.forEach(inst => {
-            inst.endPeriod(periodId, points, trs, block);
-        });
     }
 }
 

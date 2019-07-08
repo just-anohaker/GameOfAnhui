@@ -9,7 +9,6 @@ module.exports = async function () {
 
     app.gameRules = new GameRules();
     await app.gameRules._init();
-    app.gameRules.registerGameType(10, new Rule());
 
     // contract account
     app.registerFee(1000, 0);
