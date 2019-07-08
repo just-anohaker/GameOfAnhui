@@ -1,7 +1,9 @@
 "use strict";
 
-const Validate = require("validate.js");
-const BigNumber = require("bignumber");
+const validate = require("validate.js");
+const bignum = require("bignumber");
+
+const config = require("../config");
 
 const PeriodBegin = "period_begin";
 const PeriodMothball = "period_mothball";
@@ -56,7 +58,7 @@ class GameRules {
         console.log("[GameRule] init:", this.periodInfo);
     }
 
-    appendBetting(periodId, betOrders, trs, block) {
+    async appendBetting(periodId, betOrders, trs, block) {
         if (this.periodInfo == null) {
             return `not in period now.`;
         }
@@ -76,14 +78,19 @@ class GameRules {
         }
 
         const modeList = ["1", "2", "3", "4", "5"];
+        const [{ amount = "" }] = await app.model.Reward.findAll({
+            fields: ["amount"],
+            condition: { periodId }
+        });
+        let bnum = bignum(amount);
         for (let i = 0; i < betOrders.length; i++) {
             const order = betOrders[i];
             const { mode = null, point = null, amount = null } = betOrders[i];
-            if (!Validate.isInteger(Number(mode)) || !Validate.isInteger(Number(point))) {
+            if (!validate.isInteger(Number(mode)) || !validate.isInteger(Number(point))) {
                 return "order must contains mode, point all in string type with number format.";
             }
             try {
-                BigNumber(amount)
+                bignum(amount)
             } catch (error) {
                 return "order must contains amount in string type with bignumber format";
             }
@@ -92,8 +99,14 @@ class GameRules {
             }
 
             // check balance
+            // if (app.balances.get(trs.senderId, config.currency).lt(amount)) {
+            //     return "Insufficient balance"
+            // }
+            app.balances.increase(trs.senderId, config.currency, amount);
+            bnum = bnum.plus(amount);
         }
 
+        app.sdb.update("game_reward", { amount: bnum.toString() }, { periodId });
         app.sdb.create("game_betting", {
             tid: trs.id,
             periodId,
@@ -102,15 +115,15 @@ class GameRules {
         });
     }
 
-    beginPeriod(periodId, trs, block) {
+    async beginPeriod(periodId, trs, block) {
         this.periodInfo = { period: periodId, status: PeriodBegin, height: block.height };
     }
 
-    mothballPeriod(periodId, trs, block) {
+    async mothballPeriod(periodId, trs, block) {
         this.periodInfo = { period: periodId, status: PeriodMothball, height: block.height };
     }
 
-    endPeriod(periodId, points, trs, block) {
+    async endPeriod(periodId, points, trs, block) {
         this.periodInfo = { period: periodId, status: PeriodEnd, height: block.height };
     }
 }

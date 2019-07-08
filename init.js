@@ -2,6 +2,8 @@
 
 const GameRules = require("./helpers/game_rules/game");
 
+const config = require("./helpers/config");
+
 const Rule = require("./helpers/game_rules/rules/base_rule");
 
 module.exports = async function () {
@@ -9,6 +11,9 @@ module.exports = async function () {
 
     app.gameRules = new GameRules();
     await app.gameRules._init();
+
+    // set game default currency
+    app.setDefaultFee(config.currency, "10000000");
 
     // contract account
     app.registerFee(1000, 0);

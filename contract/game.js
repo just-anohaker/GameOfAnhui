@@ -58,7 +58,7 @@ module.exports = {
             return JSON.stringify("betOrders must be array.");
         }
 
-        return app.gameRules.appendBetting(periodId, betOrders, this.trs, this.block);
+        return await app.gameRules.appendBetting(periodId, betOrders, this.trs, this.block);
         // return "Contract[betting] not implemented.";
     },
 
@@ -88,7 +88,7 @@ module.exports = {
             { mothball_tid: this.trs.id },
             { periodId }
         );
-        return app.gameRules.mothballPeriod(periodId, this.trs, this.block);
+        return await app.gameRules.mothballPeriod(periodId, this.trs, this.block);
         // return "Contract[mothball_period] not implemented.";
     },
 
@@ -136,7 +136,7 @@ module.exports = {
             { periodId }
         );
         app.sdb.del("variable", { key: currentPeriod[0].key });
-        return app.gameRules.endPeriod(periodId, points, this.trs, this.block);
+        return await app.gameRules.endPeriod(periodId, points, this.trs, this.block);
         // return "Contract[end_period] not implemented.";
     }
 }
