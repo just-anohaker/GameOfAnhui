@@ -15,6 +15,8 @@ module.exports = async function () {
     // set game default currency
     app.setDefaultFee(config.currency, "10000000");
 
+    app.sdb.load("Reward", app.model.Reward.fields, [["periodId", "amount"]]);
+
     // contract account
     app.registerFee(1000, 0);
     app.registerContract(1000, "account.deposit");

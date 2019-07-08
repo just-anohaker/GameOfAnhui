@@ -36,7 +36,7 @@ module.exports = {
             begin_tid: this.trs.id,
             status: 0
         });
-        app.sdb.create("game_reward", {
+        app.sdb.create("Reward", {
             periodId,
             amount: "0"
         });
