@@ -31,35 +31,50 @@ class GameRules {
             });
             if (periodInfo == null) break;
 
+            let status = null, trId = null;
             if (periodInfo.status === 0 && periodInfo.begin_tid != null) {
-                const [trInfo = null] = app.model.Transaction.findAll({
-                    fields: ["height"],
-                    condition: { id: periodInfo.begin_tid }
-                });
-                if (trInfo == null) {
-                    break;
-                }
-                this.periodInfo = { period: period.value, status: PeriodBegin, height: trInfo.height };
+                status = PeriodBegin;
+                trId = periodInfo.begin_tid;
+
+                // const [trInfo = null] = app.model.Transaction.findAll({
+                //     fields: ["height"],
+                //     condition: { id: periodInfo.begin_tid }
+                // });
+                // if (trInfo == null) {
+                //     break;
+                // }
+                // this.periodInfo = { period: period.value, status: PeriodBegin, height: trInfo.height };
             } else if (periodInfo.status === 1 && periodInfo.mothball_tid != null) {
-                const [trInfo = null] = app.model.Transaction.findAll({
-                    fields: ["height"],
-                    condition: { id: periodInfo.mothball_tid }
-                });
-                if (trInfo == null) {
-                    break;
-                }
-                this.periodInfo = { period: period.value, status: PeriodMothball, height: trInfo.height };
+                status = PeriodMothball;
+                trId = periodInfo.mothball_tid;
+                // const [trInfo = null] = app.model.Transaction.findAll({
+                //     fields: ["height"],
+                //     condition: { id: periodInfo.mothball_tid }
+                // });
+                // if (trInfo == null) {
+                //     break;
+                // }
+                // this.periodInfo = { period: period.value, status: PeriodMothball, height: trInfo.height };
             } else if (periodInfo.status === 2 && periodInfo.end_tid != null) {
-                const [trInfo = null] = app.model.Transaction.findAll({
+                status = PeriodEnd;
+                trId = periodInfo.end_tid;
+                // const [trInfo = null] = app.model.Transaction.findAll({
+                //     fields: ["height"],
+                //     condition: { id: periodInfo.end_tid }
+                // });
+                // if (trInfo == null) {
+                //     break;
+                // }
+                // this.periodInfo = { period: period.value, status: PeriodEnd, height: trInfo.height };
+            }
+            if (status != null && trId != null) {
+                const [trInfo = null] = await app.model.Transaction.findAll({
                     fields: ["height"],
-                    condition: { id: periodInfo.end_tid }
+                    condition: { id: trId }
                 });
-                if (trInfo == null) {
-                    break;
-                }
-                this.periodInfo = { period: period.value, status: PeriodEnd, height: trInfo.height };
-            } else {
-                break;
+                if (trInfo == null) break;
+
+                this.periodInfo = { period: period.value, status, height: trInfo.height };
             }
         } while (false);
         console.log("[GameRule] init:", this.periodInfo);

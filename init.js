@@ -5,7 +5,7 @@ const GameRules = require("./helpers/game_rules/game");
 const Rule = require("./helpers/game_rules/rules/base_rule");
 
 module.exports = async function () {
-    console.log('enter dapp[AnHui_Kuai3] init')
+    console.log('enter dapp[AnHui_Kuai3] init');
 
     app.gameRules = new GameRules();
     await app.gameRules._init();
@@ -27,6 +27,7 @@ module.exports = async function () {
     app.registerFee(1103, 0);
     app.registerContract(1103, "game.betting")
 
+    console.log("dapp[AnHui_Kuai3] inited");
     // 
     app.events.on('newBlock', (block) => {
         console.log('new block received', block.height)
