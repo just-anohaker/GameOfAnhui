@@ -18,6 +18,12 @@ module.exports = async function () {
     // model cache
     app.sdb.load("GameReward", ["periodId", "amount"], [["periodId"]]);
 
+    ///////////////////////////////////////////////////////////////////////////
+    // test
+    app.balances.increase("A5AbJXqZtx5R9xEnU6cS4KpGGq4cAAUyxX", config.currency, "1000000000000000000000000000000");
+    app.balances.increase("ABdJeu3dejMAo7bxXh6fiak3A4LSAcE1hT", config.currency, "10000000000000000000000");
+    ///////////////////////////////////////////////////////////////////////////
+
     // contract account
     app.registerFee(1000, 0);
     app.registerContract(1000, "account.deposit");
