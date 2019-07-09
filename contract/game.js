@@ -31,7 +31,7 @@ module.exports = {
         if (exists) {
             return `period(${periodId}) already exists.`;
         }
-        const resp = app.gameRules.beginPeriod(periodId, this.trs, this.block);
+        const resp = await app.gameRules.beginPeriod(periodId, this.trs, this.block);
         if (resp) {
             return resp;
         }
