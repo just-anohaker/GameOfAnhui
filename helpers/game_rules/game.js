@@ -108,14 +108,13 @@ class GameRules {
             }
 
             // check balance
-            // if (app.balances.get(trs.senderId, config.currency).lt(amount)) {
-            //     return "Insufficient balance"
-            // }
-            app.balances.increase(trs.senderId, config.currency, amount);
+            if (app.balances.get(trs.senderId, config.currency).lt(amount)) {
+                return "Insufficient balance"
+            }
+            app.balances.decrease(trs.senderId, config.currency, amount);
             bnum = bnum.plus(amount);
         }
 
-        app.balances.decrease(trs.senderId, config.currency, bnum.toString());
         app.sdb.update("GameReward", { amount: bnum.toString() }, { periodId });
         app.sdb.create("GameBetting", {
             tid: trs.id,
@@ -137,7 +136,7 @@ class GameRules {
         const self = this;
         this.periodInfo = { period: periodId, status: PeriodEnd, height: block.height };
 
-        const rewards = await app.model.GameRewards.findAll({
+        const rewards = await app.model.GameReward.findAll({
             fields: ["periodId", "amount"],
             condition: { periodId }
         });
@@ -150,7 +149,7 @@ class GameRules {
         });
         allTrs.forEach(tr => {
             let total = bignum("0");
-            const orders = JSON.parse(orders);
+            const orders = JSON.parse(tr.orders);
             orders.forEach(order => {
                 if (self.gameRuleInsts.has(order.mode)) {
                     total = total.plus(self.gameRuleInsts.get(order.mode).settle(periodId, order.point, order.amount));
@@ -160,7 +159,7 @@ class GameRules {
             });
             app.sdb.create("GameSettlement", {
                 tid: tr.tid,
-                result: !total.lt("0"),
+                result: total.lt("0") ? 0 : 1,
                 amount: total.toString()
             });
             // app.balances.transfer(config.currency, total.toString(), "", tr.address);
