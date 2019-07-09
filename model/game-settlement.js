@@ -4,7 +4,7 @@ module.exports = {
     name: "game_settlements",
     fields: [
         {
-            name: "id",
+            name: "tid",
             type: "String",
             length: 64,
             not_null: !0

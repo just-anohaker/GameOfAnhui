@@ -4,6 +4,11 @@ const validate = require("validate.js");
 const bignum = require("bignumber");
 
 const config = require("../config");
+const Mode1 = require("./rules/game_rule1");
+const Mode2 = require("./rules/game_rule2");
+const Mode3 = require("./rules/game_rule3");
+const Mode4 = require("./rules/game_rule4");
+const Mode5 = require("./rules/game_rule5");
 
 const PeriodBegin = "period_begin";
 const PeriodMothball = "period_mothball";
@@ -12,6 +17,13 @@ const PeriodEnd = "period_end";
 class GameRules {
     constructor() {
         this.periodInfo = null; // {period, status, height}
+
+        this.gameRuleInsts = new Map();
+        this.gameRuleInsts.set("1", new Mode1());
+        this.gameRuleInsts.set("2", new Mode2());
+        this.gameRuleInsts.set("3", new Mode3());
+        this.gameRuleInsts.set("4", new Mode4());
+        this.gameRuleInsts.set("5", new Mode5());
     }
 
     async _init() {
@@ -103,8 +115,9 @@ class GameRules {
             bnum = bnum.plus(amount);
         }
 
+        app.balances.decrease(trs.senderId, config.currency, bnum.toString());
         app.sdb.update("GameReward", { amount: bnum.toString() }, { periodId });
-        app.sdb.create("game_betting", {
+        app.sdb.create("GameBetting", {
             tid: trs.id,
             periodId,
             address: trs.senderId,
@@ -121,7 +134,38 @@ class GameRules {
     }
 
     async endPeriod(periodId, points, trs, block) {
+        const self = this;
         this.periodInfo = { period: periodId, status: PeriodEnd, height: block.height };
+
+        const rewards = await app.model.GameRewards.findAll({
+            fields: ["periodId", "amount"],
+            condition: { periodId }
+        });
+        if (rewards.length === 1) {
+            app.balances.increase("A5AbJXqZtx5R9xEnU6cS4KpGGq4cAAUyxX", config.currency, rewards[0].amount);
+        }
+        const allTrs = await app.model.GameBetting.findAll({
+            fields: ["tid", "address", "orders"],
+            condition: { periodId }
+        });
+        allTrs.forEach(tr => {
+            let total = bignum("0");
+            const orders = JSON.parse(orders);
+            orders.forEach(order => {
+                if (self.gameRuleInsts.has(order.mode)) {
+                    total = total.plus(self.gameRuleInsts.get(order.mode).settle(periodId, order.point, order.amount));
+                } else {
+                    total = total.plus(order.amount);
+                }
+            });
+            app.sdb.create("GameSettlement", {
+                tid: tr.tid,
+                result: !total.lt("0"),
+                amount: total.toString()
+            });
+            // app.balances.transfer(config.currency, total.toString(), "", tr.address);
+            app.balances.increase(tr.address, config.currency, total.toString());
+        });
     }
 }
 
