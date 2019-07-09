@@ -110,6 +110,11 @@ module.exports = {
         if (pointsChecker = app.validate("array", points, { length: 3 })) {
             return JSON.stringify(pointsChecker);
         }
+        for (let p of points) {
+            if (typeof p !== "string") {
+                return JSON.stringify("points item must be string");
+            }
+        }
 
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.GamePeriod.findAll({

@@ -94,7 +94,6 @@ class GameRules {
         let bnum = bignum(amount);
         let bamount = bignum("0");
         for (let i = 0; i < betOrders.length; i++) {
-            const order = betOrders[i];
             const { mode = null, point = null, amount = null } = betOrders[i];
             try {
                 if (typeof mode !== "string") {
