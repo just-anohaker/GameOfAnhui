@@ -4,6 +4,7 @@ const validate = require("validate.js");
 const bignum = require("bignumber");
 
 const config = require("../config");
+const gamecfg = require("./game_config");
 const Mode1 = require("./rules/game_rule1");
 const Mode2 = require("./rules/game_rule2");
 const Mode3 = require("./rules/game_rule3");
@@ -89,32 +90,35 @@ class GameRules {
             return `period(${this.periodInfo.period}) is finished.`;
         }
 
-        const modeList = ["1", "2", "3", "4", "5"];
         const { amount = "0" } = app.sdb.get("GameReward", { periodId });
         let bnum = bignum(amount);
+        let bamount = bignum("0");
         for (let i = 0; i < betOrders.length; i++) {
             const order = betOrders[i];
             const { mode = null, point = null, amount = null } = betOrders[i];
-            if (!validate.isInteger(Number(mode)) || !validate.isInteger(Number(point))) {
-                return "order must contains mode, point all in string type with number format.";
-            }
             try {
-                bignum(amount)
-            } catch (error) {
-                return "order must contains amount in string type with bignumber format";
-            }
-            if (!modeList.includes(mode)) {
-                return `unsupported mode(${mode}), validable modes(${modeList})`;
-            }
+                if (typeof mode !== "string") {
+                    throw new Error("mode must be a string");
+                }
+                if (!this.gameRuleInsts.has(mode)) {
+                    throw new Error("mode value must in ['1', '2', '3', '4', '5']");
+                }
+                const inst = this.gameRuleInsts.get(mode);
+                inst.validate(point, amount);
 
-            // check balance
-            if (app.balances.get(trs.senderId, config.currency).lt(amount)) {
-                return "Insufficient balance"
+                // check balance
+                if (app.balances.get(trs.senderId, config.currency).sub(bamount).lt(amount)) {
+                    return "Insufficient balance"
+                }
+                // app.balances.decrease(trs.senderId, config.currency, amount);
+                bamount = bamount.plus(amount);
+                bnum = bnum.plus(amount);
+            } catch (error) {
+                return error.toString();
             }
-            app.balances.decrease(trs.senderId, config.currency, amount);
-            bnum = bnum.plus(amount);
         }
 
+        app.balances.decrease(trs.senderId, config.currency, bamount.toString());
         app.sdb.update("GameReward", { amount: bnum.toString() }, { periodId });
         app.sdb.create("GameBetting", {
             tid: trs.id,
@@ -125,14 +129,23 @@ class GameRules {
     }
 
     async beginPeriod(periodId, trs, block) {
+        if (gamecfg.BankerPublicKey != trs.senderPublicKey) {
+            return "Permission denied";
+        }
         this.periodInfo = { period: periodId, status: PeriodBegin, height: block.height };
     }
 
     async mothballPeriod(periodId, trs, block) {
+        if (gamecfg.BankerPublicKey != trs.senderPublicKey) {
+            return "Permission denied";
+        }
         this.periodInfo = { period: periodId, status: PeriodMothball, height: block.height };
     }
 
     async endPeriod(periodId, points, trs, block) {
+        if (gamecfg.BankerPublicKey != trs.senderPublicKey) {
+            return "Permission denied";
+        }
         const self = this;
         this.periodInfo = { period: periodId, status: PeriodEnd, height: block.height };
 
@@ -141,7 +154,7 @@ class GameRules {
             condition: { periodId }
         });
         if (rewards.length === 1) {
-            app.balances.increase("A5AbJXqZtx5R9xEnU6cS4KpGGq4cAAUyxX", config.currency, rewards[0].amount);
+            app.balances.increase(gamecfg.BankerAddress, config.currency, rewards[0].amount);
         }
         const allTrs = await app.model.GameBetting.findAll({
             fields: ["tid", "address", "orders"],
@@ -152,7 +165,7 @@ class GameRules {
             const orders = JSON.parse(tr.orders);
             orders.forEach(order => {
                 if (self.gameRuleInsts.has(order.mode)) {
-                    total = total.plus(self.gameRuleInsts.get(order.mode).settle(periodId, order.point, order.amount));
+                    total = total.plus(self.gameRuleInsts.get(order.mode).settle(periodId, order.point, order.amount, points));
                 } else {
                     total = total.plus(order.amount);
                 }

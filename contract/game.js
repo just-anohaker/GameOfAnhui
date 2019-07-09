@@ -31,6 +31,11 @@ module.exports = {
         if (exists) {
             return `period(${periodId}) already exists.`;
         }
+        const resp = app.gameRules.beginPeriod(periodId, this.trs, this.block);
+        if (resp) {
+            return resp;
+        }
+
         app.sdb.create("GamePeriod", {
             periodId,
             begin_tid: this.trs.id,
@@ -44,7 +49,6 @@ module.exports = {
             key: `period-${periodId}`,
             value: periodId
         });
-        return app.gameRules.beginPeriod(periodId, this.trs, this.block);
         // return "Contract[start_period] not implemented.";
     },
 
@@ -71,7 +75,6 @@ module.exports = {
         if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
             return JSON.stringify(periodIdChecker);
         }
-
         app.sdb.lock("game.period@" + periodId);
         let found = await app.model.GamePeriod.findAll({
             fields: ["status"],
@@ -83,6 +86,10 @@ module.exports = {
         if (found[0].status !== 0) {
             return `period(${periodId}) not in started status.`;
         }
+        const resp = await app.gameRules.mothballPeriod(periodId, this.trs, this.block);
+        if (resp) {
+            return resp;
+        }
 
         app.sdb.update("GamePeriod",
             { status: 1 },
@@ -92,7 +99,6 @@ module.exports = {
             { mothball_tid: this.trs.id },
             { periodId }
         );
-        return await app.gameRules.mothballPeriod(periodId, this.trs, this.block);
         // return "Contract[mothball_period] not implemented.";
     },
 
@@ -126,6 +132,10 @@ module.exports = {
         if (currentPeriod.length !== 1) {
             return "Exception: variable record period more than one";
         }
+        const resp = await app.gameRules.endPeriod(periodId, points, this.trs, this.block);
+        if (resp) {
+            return resp;
+        }
 
         app.sdb.update("GamePeriod",
             { status: 2 },
@@ -140,7 +150,6 @@ module.exports = {
             { periodId }
         );
         app.sdb.del("Variable", { key: currentPeriod[0].key });
-        return await app.gameRules.endPeriod(periodId, points, this.trs, this.block);
         // return "Contract[end_period] not implemented.";
     }
 }
