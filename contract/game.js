@@ -31,7 +31,7 @@ module.exports = {
         if (exists) {
             return `period(${periodId}) already exists.`;
         }
-        app.sdb.create("game_period", {
+        app.sdb.create("GamePeriod", {
             periodId,
             begin_tid: this.trs.id,
             status: 0
@@ -84,11 +84,11 @@ module.exports = {
             return `period(${periodId}) not in started status.`;
         }
 
-        app.sdb.update("game_period",
+        app.sdb.update("GamePeriod",
             { status: 1 },
             { periodId }
         );
-        app.sdb.update("game_period",
+        app.sdb.update("GamePeriod",
             { mothball_tid: this.trs.id },
             { periodId }
         );
@@ -127,15 +127,15 @@ module.exports = {
             return "Exception: variable record period more than one";
         }
 
-        app.sdb.update("game_period",
+        app.sdb.update("GamePeriod",
             { status: 2 },
             { periodId }
         );
-        app.sdb.update("game_period",
+        app.sdb.update("GamePeriod",
             { end_tid: this.trs.id },
             { periodId }
         );
-        app.sdb.update("game_period",
+        app.sdb.update("GamePeriod",
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { periodId }
         );

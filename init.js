@@ -15,6 +15,7 @@ module.exports = async function () {
     // set game default currency
     app.setDefaultFee(config.currency, "10000000");
 
+    // model cache
     app.sdb.load("GameReward", ["periodId", "amount"], [["periodId"]]);
 
     // contract account
