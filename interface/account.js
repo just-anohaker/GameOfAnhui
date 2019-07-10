@@ -29,6 +29,7 @@ app.route.get("/account/informations", async function (req) {
 });
 
 app.route.post("/account/recharge", async function (req) {
+    console.log("============== [interface account] /account/recharge:", req);
     const tr = ETMJS.transfer.createInTransfer(app.meta.transactionId, "ETM", req.body.amount, req.body.secret, req.body.secondSecret);
     console.log("[interface account] /account/recharge", tr);
     app.api.dapps.transport("transaction", tr, (...args) => {
