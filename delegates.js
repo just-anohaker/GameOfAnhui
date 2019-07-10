@@ -49,3 +49,5 @@ const createAccount = [{
   publicKey:
     '7e09188d4288ddaea2a02c6f2cacd567d7653db8fce35a56001faa20dcb49889'
 }]
+
+const devDappId = "81961c799bf3f47652e7bab01d4e8437134374a7a114cfab1e89621bf644ca89";
