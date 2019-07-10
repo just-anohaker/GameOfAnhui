@@ -30,7 +30,9 @@ app.route.get("/account/informations", async function (req) {
 
 app.route.post("/account/recharge", async function (req) {
     console.log("============== [interface account] /account/recharge:", req);
-    const tr = ETMJS.transfer.createInTransfer(app.meta.transactionId, "ETM", req.body.amount, req.body.secret, req.body.secondSecret);
+    const query = req.query;
+    const tr = ETMJS.transfer.createInTransfer(app.meta.transactionId, "ETM",
+        query.amount, query.secret, query.secondSecret);
     console.log("[interface account] /account/recharge", tr);
     app.api.dapps.transport("transaction", tr, (...args) => {
         console.log("================ dapp transaction:", ...args);
