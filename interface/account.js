@@ -1,21 +1,21 @@
 "use strict";
 
+const ETMJS = require("etm-js");
+
+const config = require("../helpers/config");
+
 app.route.get("/account/chain_balance", async function (req) {
-    // TODO
-    throw new Error("[Interface account] /account/chain_balance unimplemented.");
+    console.log("[interface account] get chain_balance query:", req.query);
+    const resp = await global.PIFY(app.api.accounts.getBalance(req.query.address));
+    console.log("[interface account] get chain_balance:", resp.balance);
+    return { balance: resp.balance.toString() };
 });
 
 app.route.get("/account/game_balance", async function (req) {
-    // TODO
-    console.log("[Interface account] /account/game_balance ", req);
-    // const found = app.model.Balance.findAll({
-    //     condition: {
-    //         address: a
-    //     },
-    //     fields: ["currency", "balance"]
-    // });
-    // return found;
-    throw new Error("[Interface account] /account/game_balance unimplemented.");
+    console.log("[interface account] get game_balance query:", req.query);
+    const resp = app.balances.get(req.query.address, config.currency);
+    console.log("[interface account] get game_balance:", balance.toString());
+    return resp.toString();
 });
 
 app.route.get("/account/bettings", async function (req) {
@@ -26,4 +26,12 @@ app.route.get("/account/bettings", async function (req) {
 app.route.get("/account/informations", async function (req) {
     // TODO
     throw new Error("[Interface account] /account/informations unimplemented.");
+});
+
+app.route.post("/account/recharge", async function (req) {
+    const tr = ETMJS.createInTransfer(app.meta.transactionId, "ETM", req.amount, req.secret, req.secondSecret);
+    console.log("[interface account] /account/recharge", tr);
+    app.api.dapps.transport("transaction", tr, (...args) => {
+        console.log("================ dapp transaction:", ...args);
+    });
 });

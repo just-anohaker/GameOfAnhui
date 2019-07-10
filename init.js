@@ -6,11 +6,17 @@ const config = require("./helpers/config");
 
 const Rule = require("./helpers/game_rules/rules/base_rule");
 
+const BeforeCreateBlockHook = require("./helpers/before-create-block-hook");
+
 module.exports = async function () {
     console.log('enter dapp[AnHui_Kuai3] init');
 
     app.gameRules = new GameRules();
     await app.gameRules._init();
+
+    app.beforeCreateBlockHook = new BeforeCreateBlockHook();
+
+    app.registerHook("beforeCreateBlock", app.beforeCreateBlockHook.hook.bind(app.beforeCreateBlockHook));
 
     // set game default currency
     app.setDefaultFee(config.currency, "10000000");

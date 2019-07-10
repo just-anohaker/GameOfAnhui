@@ -5,5 +5,11 @@
 		"desert genius surface volcano rocket blossom close catalog faith bag fetch warfare",
 		"soul cargo rocket limb syrup car action spoon school drink elevator salad",
 		"term squirrel average best erosion knee town stadium connect toward miss crisp"
+	],
+	"peers": [
+		{
+			"ip": "127.0.0.1",
+			"port": 4096
+		}
 	]
 }
