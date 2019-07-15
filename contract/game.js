@@ -112,13 +112,16 @@ module.exports = {
         // TODO: notify period mothball
     },
 
-    end_period: async function (periodId, points) {
-        let periodIdChecker, pointsChecker;
+    end_period: async function (periodId, points, hash) {
+        let periodIdChecker, pointsChecker, hashChecker;
         if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
             return JSON.stringify(periodIdChecker);
         }
         if (pointsChecker = app.validate("array", points, { length: 3 })) {
             return JSON.stringify(pointsChecker);
+        }
+        if (hashChecker = app.validate("string", hash)) {
+            return JSON.stringify(hashChecker);
         }
         for (let p of points) {
             if (typeof p !== "string") {
@@ -152,18 +155,13 @@ module.exports = {
             return resp;
         }
 
-        app.sdb.update("GamePeriod",
-            { status: 2 },
-            { periodId }
-        );
-        app.sdb.update("GamePeriod",
-            { end_tid: this.trs.id },
-            { periodId }
-        );
+        app.sdb.update("GamePeriod", { status: 2 }, { periodId });
+        app.sdb.update("GamePeriod", { end_tid: this.trs.id }, { periodId });
         app.sdb.update("GamePeriod",
             { point_sequences: JSON.stringify(points.map(val => val.toString())) },
             { periodId }
         );
+        app.sdb.update("GamePeriod", { hash }, { periodId });
         app.sdb.del("Variable", { key: currentPeriod[0].key });
         // TODO: notify period end
     }

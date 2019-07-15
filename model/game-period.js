@@ -38,6 +38,11 @@ module.exports = {
             name: "point_sequences",
             type: "String",
             length: 256
+        },
+        {
+            name: "hash",
+            type: "String",
+            length: 2048
         }
     ]
 };
