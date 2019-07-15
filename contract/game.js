@@ -120,7 +120,7 @@ module.exports = {
         if (pointsChecker = app.validate("array", points, { length: 3 })) {
             return JSON.stringify(pointsChecker);
         }
-        if (typeof hash === "string" && hash.trim() !== "") {
+        if (!(typeof hash === "string" && hash.trim() !== "")) {
             return JSON.stringify(hashChecker);
         }
         hash = hash.trim();

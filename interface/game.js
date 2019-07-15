@@ -26,7 +26,7 @@ app.route.get("/game/period", async function (req) {
 
 app.route.get("/game/periods", async function (req) {
     const periods = await app.model.GamePeriod.findAll({
-        fields: ["periodId", "point_sequences"],
+        fields: ["periodId", "point_sequences", "hash"],
         condition: { status: 2 },
         sort: { periodId: -1 }
     });
