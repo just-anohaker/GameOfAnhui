@@ -24,11 +24,13 @@ app.route.get("/game/period", async function (req) {
         throw new Error(`PeriodId(${periodId}) not found`);
     }
     return {
-        id: periodId,
-        status: periodInfo.status,
-        startTr: periodInfo.begin_tid,
-        mothballTr: periodInfo.mothball_tid,
-        endTr: periodInfo.end_tid
+        result: {
+            id: periodId,
+            status: periodInfo.status,
+            startTr: periodInfo.begin_tid,
+            mothballTr: periodInfo.mothball_tid,
+            endTr: periodInfo.end_tid
+        }
     };
 });
 
