@@ -113,7 +113,7 @@ module.exports = {
     },
 
     end_period: async function (periodId, points, hash) {
-        let periodIdChecker, pointsChecker, hashChecker;
+        let periodIdChecker, pointsChecker, hashChecker = "hash must be string";
         if (periodIdChecker = app.validate("string", periodId, { number: { onlyInteger: true } })) {
             return JSON.stringify(periodIdChecker);
         }
@@ -123,7 +123,7 @@ module.exports = {
         if (typeof hash === "string" && hash.trim() !== "") {
             return JSON.stringify(hashChecker);
         }
-        hash = hasl.trim();
+        hash = hash.trim();
         for (let p of points) {
             if (typeof p !== "string") {
                 return JSON.stringify("points item must be string");
