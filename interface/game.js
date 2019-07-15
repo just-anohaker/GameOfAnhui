@@ -32,6 +32,8 @@ app.route.get("/game/periods", async function (req) {
     });
     const result = periods.map(val => {
         // TODO
+        const points = JSON.parse(val.point_sequences);
+        val.point_sequences = points.map(val => Number(val));
         return val;
     });
 
