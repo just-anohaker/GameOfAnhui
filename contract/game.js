@@ -49,7 +49,7 @@ module.exports = {
             key: `period-${periodId}`,
             value: periodId
         });
-        if (!app.sdb.get("Variable", "lastestPeriod")) {
+        if (!app.sdb.get("Variable", { key: "lastestPeriod" })) {
             app.sdb.create("Variable", { key: "lastestPeriod", value: periodId });
         } else {
             app.sdb.update("Variable", { value: periodId }, { key: "lastestPeriod" });
