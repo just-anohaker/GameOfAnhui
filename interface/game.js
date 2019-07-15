@@ -28,8 +28,9 @@ function getStartSlot(periodId) {
     if (!Number.isSafeInteger(year) ||
         !Number.isSafeInteger(month) ||
         !Number.isSafeInteger(date) ||
-        !Number.isSafeInteger(times) ||
-        times >= PERIOD_MAX_TIMES - 1) return null;
+        !Number.isSafeInteger(times)) {
+        return null;
+    }
 
     const startTime = new Date(year, month - 1, date, START_HOUR, START_MINUTE);
     const resultTime = startTime.getTime() + times * PERIOD_PER_DURATION_MS;
