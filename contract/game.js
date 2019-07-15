@@ -56,6 +56,10 @@ module.exports = {
         }
 
         // TODO:  notify period started
+        app.api.dapps.notification({
+            event: "start-period",
+            eventData: periodId
+        }, () => { });
     },
 
     /**
@@ -110,6 +114,10 @@ module.exports = {
             { periodId }
         );
         // TODO: notify period mothball
+        app.api.dapps.notification({
+            event: "mothball-period",
+            eventData: periodId
+        }, () => { });
     },
 
     end_period: async function (periodId, points, hash) {
@@ -165,5 +173,9 @@ module.exports = {
         app.sdb.update("GamePeriod", { hash }, { periodId });
         app.sdb.del("Variable", { key: currentPeriod[0].key });
         // TODO: notify period end
+        app.api.dapps.notification({
+            event: "end-period",
+            eventData: { periodId, points, hash }
+        }, () => { });
     }
 }
