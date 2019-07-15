@@ -50,17 +50,12 @@ module.exports = {
             value: periodId
         });
         if (!app.sdb.get("Variable", "lastestPeriod")) {
-            app.sdb.create("Variable", {
-                key: "lastestPeriod",
-                value: periodId
-            });
+            app.sdb.create("Variable", { key: "lastestPeriod", value: periodId });
         } else {
-            app.sdb.update("Variable", {
-                key: "lastestPeriod",
-                value: periodId
-            });
+            app.sdb.update("Variable", { value: periodId }, { key: "lastestPeriod" });
         }
-        // return "Contract[start_period] not implemented.";
+
+        // TODO:  notify period started
     },
 
     /**
@@ -114,7 +109,7 @@ module.exports = {
             { mothball_tid: this.trs.id },
             { periodId }
         );
-        // return "Contract[mothball_period] not implemented.";
+        // TODO: notify period mothball
     },
 
     end_period: async function (periodId, points) {
@@ -170,6 +165,6 @@ module.exports = {
             { periodId }
         );
         app.sdb.del("Variable", { key: currentPeriod[0].key });
-        // return "Contract[end_period] not implemented.";
+        // TODO: notify period end
     }
 }

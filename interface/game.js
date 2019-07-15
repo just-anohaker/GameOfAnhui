@@ -25,8 +25,21 @@ app.route.get("/game/period", async function (req) {
 });
 
 app.route.get("/game/periods", async function (req) {
-    // TODO
-    throw new Error("[Interface game] /game/periods unimplemented.");
+    const periods = await app.model.GamePeriod.findAll({
+        fields: ["periodId", "point_sequences"],
+        condition: { status: 2 },
+        sort: { periodId: -1 }
+    });
+    const result = periods.map(val => {
+        // TODO
+        return val;
+    });
+
+    return {
+        result,
+        count: result.length
+    };
+
 });
 
 app.route.get("/game/information", async function (req) {
