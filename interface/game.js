@@ -16,7 +16,7 @@ app.route.get("/game/period", async function (req) {
         throw new Error("Not in period");
     }
     const periodId = currentPeriod.value;
-    const periodInfo = app.model.GamePeriod.findOne({
+    const periodInfo = await app.model.GamePeriod.findOne({
         fields: ["begin_tid", "mothball_tid", "end_tid", "status"],
         condition: { periodId }
     });
