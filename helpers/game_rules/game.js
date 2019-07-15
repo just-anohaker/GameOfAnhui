@@ -121,6 +121,7 @@ class GameRules {
         app.sdb.update("GameReward", { amount: bnum.toString() }, { periodId });
         app.sdb.create("GameBetting", {
             tid: trs.id,
+            timestamp: trs.timestamp,
             periodId,
             address: trs.senderId,
             orders: JSON.stringify(betOrders)

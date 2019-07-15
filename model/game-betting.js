@@ -13,6 +13,11 @@ module.exports = {
             primary_key: !0,
         },
         {
+            name: "timestamp",
+            type: "BigInt",
+            not_null: !0,
+        },
+        {
             name: "periodId",
             type: "String",
             length: 32,

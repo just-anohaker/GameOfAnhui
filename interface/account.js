@@ -17,6 +17,15 @@ app.route.get("/account/game_balance", async function (req) {
 });
 
 app.route.get("/account/bettings", async function (req) {
+    console.log("[interface account] get bettings query: ", req.query);
+    // let senderId = req.query.address;
+    // let offset = req.query.offset || 0;
+    // let limit = req.query.limit || 100;
+    // const resp = await app.model.GameBetting.findAll({
+    //     fields: ["id"],
+    //     condition: { senderId: senderId },
+    //     sort: "timestamp"
+    // });
     // TODO
     throw new Error("[Interface account] /account/bettings unimplemented.");
 });

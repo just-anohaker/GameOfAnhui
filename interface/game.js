@@ -1,21 +1,11 @@
 "use strict";
 
 app.route.get("/game/period", async function (req) {
-    const variableCount = await app.model.Variable.count({ key: { $like: "period-%" } });
-    if (variableCount === 0) {
+    if (!await app.model.Variable.exists({ key: "lastestPeriod" })) {
         return undefined;
     }
-    if (variableCount !== 1) {
-        throw new Error(`period exception with ${variableCount}`);
-    }
-    const currentPeriod = await app.model.Variable.findOne({
-        fields: ["key", "value"],
-        condition: { key: { $like: "period-%" } }
-    });
-    if (currentPeriod == null) {
-        throw new Error("Not in period");
-    }
-    const periodId = currentPeriod.value;
+    const lasteastPeriod = await app.model.Variable.findOne({ fields: ["value"], condition: { key: "lastestPeriod" } });
+    const periodId = lasteastPeriod.value;
     const periodInfo = await app.model.GamePeriod.findOne({
         fields: ["begin_tid", "mothball_tid", "end_tid", "status"],
         condition: { periodId }

@@ -49,6 +49,17 @@ module.exports = {
             key: `period-${periodId}`,
             value: periodId
         });
+        if (!app.sdb.get("Variable", "lastestPeriod")) {
+            app.sdb.create("Variable", {
+                key: "lastestPeriod",
+                value: periodId
+            });
+        } else {
+            app.sdb.update("Variable", {
+                key: "lastestPeriod",
+                value: periodId
+            });
+        }
         // return "Contract[start_period] not implemented.";
     },
 
@@ -68,6 +79,10 @@ module.exports = {
 
         return await app.gameRules.appendBetting(periodId, betOrders, this.trs, this.block);
         // return "Contract[betting] not implemented.";
+    },
+
+    unbetting: async function (trId) {
+        // TODO
     },
 
     mothball_period: async function (periodId) {
