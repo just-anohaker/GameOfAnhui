@@ -1,5 +1,41 @@
 "use strict";
 
+const START_HOUR = 8;
+const START_MINUTE = 40;
+
+const PERIOD_PER_DURATION_M = 4;
+const PERIOD_PER_DURATION_S = PERIOD_PER_DURATION_M * 60;
+const PERIOD_PER_DURATION_MS = PERIOD_PER_DURATION_S * 1000;
+
+function splitPeriodId(periodId) {
+    periodId = periodId ? periodId.trim() : "";
+    const result = /^(\d{4})(\d{2})(\d{2})(\d{3})$/g.exec(periodId);
+    if (result == null) {
+        return null;
+    }
+    const [_, year, month, day, times] = result;
+    return { year, month, day, times };
+}
+
+function getStartSlot(periodId) {
+    const splitResult = splitPeriodId(periodId);
+    if (splitResult == null) return null;
+
+    let year = Number(splitResult.year);
+    let month = Number(splitResult.month);
+    let date = Number(splitResult.day);
+    let times = Number(splitResult.times);
+    if (!Number.isSafeInteger(year) ||
+        !Number.isSafeInteger(month) ||
+        !Number.isSafeInteger(date) ||
+        !Number.isSafeInteger(times) ||
+        times >= PERIOD_MAX_TIMES - 1) return null;
+
+    const startTime = new Date(year, month - 1, date, START_HOUR, START_MINUTE);
+    const resultTime = startTime.getTime() + times * PERIOD_PER_DURATION_MS;
+    return resultTime;
+}
+
 app.route.get("/game/period", async function (req) {
     if (!await app.model.Variable.exists({ key: "lastestPeriod" })) {
         return undefined;
@@ -16,6 +52,7 @@ app.route.get("/game/period", async function (req) {
     return {
         result: {
             id: periodId,
+            startTime: getStartSlot(periodId),
             status: periodInfo.status,
             startTr: periodInfo.begin_tid,
             mothballTr: periodInfo.mothball_tid,
