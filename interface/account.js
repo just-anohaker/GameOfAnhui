@@ -13,7 +13,7 @@ app.route.get("/account/game_balance", async function (req) {
     console.log("[interface account] get game_balance query:", req.query);
     const resp = app.balances.get(req.query.address, config.currency);
     console.log("[interface account] get game_balance:", resp.toString());
-    return resp.toString();
+    return { balance: resp.toString() };
 });
 
 app.route.get("/account/bettings", async function (req) {
