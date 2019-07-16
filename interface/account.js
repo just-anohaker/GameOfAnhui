@@ -12,7 +12,7 @@ app.route.get("/account/chain_balance", async function (req) {
 app.route.get("/account/game_balance", async function (req) {
     console.log("[interface account] get game_balance query:", req.query);
     const resp = app.balances.get(req.query.address, config.currency);
-    console.log("[interface account] get game_balance:", balance.toString());
+    console.log("[interface account] get game_balance:", resp.toString());
     return resp.toString();
 });
 
