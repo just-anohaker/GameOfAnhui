@@ -50,4 +50,23 @@ const createAccount = [{
     '7e09188d4288ddaea2a02c6f2cacd567d7653db8fce35a56001faa20dcb49889'
 }]
 
+const TestAccount = [
+  {
+    address: 'AAwftXb6LULPSFGRCPgE8mMhzJ8zd4j8gx',
+    secret: 'chase onion dune battle wrist ahead recall prefer retreat shield vote neck',
+    publicKey: '70efc473816117636b49feeb37ea32f1a18e936222ab1c35302c7facabef03c3'
+  },
+  {
+    address: 'A3xxSHsQL86hHa75JNMR8Hxyc78hG8aLdb',
+    secret: 'address host broccoli exile exchange two palm donkey faint deal square disease',
+    publicKey: '9383810ec9c162c378e460887eedaaaf50faaf63f790b588413c64eb5e93702f'
+
+  },
+  {
+    address: 'AERfKpJEXuYDcqDPH1t4KbBVaXFJVsNASi',
+    secret: 'easily winner oval worry govern abstract hood enforce burden tissue tape office',
+    publicKey: 'c5ffcfd390afdd7562125d20fd55fcb98efb933cb88e6afc0faa4c15eabdef9b'
+  }
+]
+
 const devDappId = "81961c799bf3f47652e7bab01d4e8437134374a7a114cfab1e89621bf644ca89";
