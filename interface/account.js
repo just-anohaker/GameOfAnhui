@@ -4,7 +4,7 @@ const config = require("../helpers/config");
 
 app.route.get("/account/chain_balance", async function (req) {
     console.log("[interface account] get chain_balance query:", req.query);
-    const resp = await global.PIFY(app.api.accounts.getBalance(req.query.address));
+    const resp = await global.PIFY(app.api.accounts.getBalance)(req.query.address);
     console.log("[interface account] get chain_balance:", resp.balance);
     return { balance: resp.balance.toString() };
 });
