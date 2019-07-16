@@ -72,6 +72,7 @@ app.route.get("/game/periods", async function (req) {
         // TODO
         const points = JSON.parse(val.point_sequences);
         val.point_sequences = points.map(val => Number(val));
+        val.startTime = getStartSlot(val.periodId);
         return val;
     });
 

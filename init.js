@@ -26,8 +26,9 @@ module.exports = async function () {
 
     ///////////////////////////////////////////////////////////////////////////
     // test
-    app.balances.increase("A5AbJXqZtx5R9xEnU6cS4KpGGq4cAAUyxX", config.currency, "1000000000");
-    app.balances.increase("ABdJeu3dejMAo7bxXh6fiak3A4LSAcE1hT", config.currency, "10000000");
+    // app.balances.increase("A5AbJXqZtx5R9xEnU6cS4KpGGq4cAAUyxX", config.currency, "1000000000");
+    // app.balances.increase("ABdJeu3dejMAo7bxXh6fiak3A4LSAcE1hT", config.currency, "10000000");
+    app.balances.increase("A5GfRnWWBZL5EAQMQvpfmhJP65J3rTaW2Z", config.currency, "100000000000000000");
     ///////////////////////////////////////////////////////////////////////////
 
     // contract account
