@@ -36,14 +36,12 @@ class GameRule2 extends BaseRule {
         void (periodId);
 
         const succ = (points[0] === points[1] && points[0] === points[2]);
-        if (!succ) {
-            return bignum(amount);
-        }
-
-        if (point === Rule2.PointAll) {
-            return bignum(amount).mul(25);
-        } else if (point === points.join("")) {
-            return bignum(amount).mul(151);
+        if (succ) {
+            if (point === Rule2.PointAll) {
+                return bignum(amount).mul(25);
+            } else if (point === points.join("")) {
+                return bignum(amount).mul(151);
+            }
         }
 
         return bignum("0");
