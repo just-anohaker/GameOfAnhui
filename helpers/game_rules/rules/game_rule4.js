@@ -45,7 +45,7 @@ class GameRule4 extends BaseRule {
 
         for (let i = 0; i < valids.length; i++) {
             const [p1, p2] = valids[i].split("");
-            if (point === valids[i] && points.include(p1) && points.include(p2)) {
+            if (point === valids[i] && points.includes(p1) && points.includes(p2)) {
                 return bignum(amount).mul(6);
             }
         }
