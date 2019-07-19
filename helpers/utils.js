@@ -33,7 +33,7 @@ function getStartSlot(periodId) {
     }
 
     const startTime = new Date(year, month - 1, date, START_HOUR, START_MINUTE);
-    const resultTime = startTime.getTime() + times * PERIOD_PER_DURATION_MS;
+    const resultTime = startTime.getTime() + (times - 1) * PERIOD_PER_DURATION_MS;
     return resultTime;
 }
 

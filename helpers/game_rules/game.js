@@ -162,6 +162,7 @@ class GameRules {
         });
         allTrs.forEach(tr => {
             let total = bignum("0");
+            const orders = JSON.parse(tr.orders);
             orders.forEach(order => {
                 if (self.gameRuleInsts.has(order.mode)) {
                     total = total.plus(self.gameRuleInsts.get(order.mode).settle(periodId, order.point, order.amount, points));
