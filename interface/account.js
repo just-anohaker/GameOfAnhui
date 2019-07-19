@@ -92,8 +92,15 @@ app.route.get("/account/bettings", async function (req) {
     // 查询指定地址的所有下注记录
     const allBets = await app.model.GameBetting.findAll({
         fields: ["tid", "timestamp", "periodId", "address", "orders"],
-        condition: { senderId: address },
+        condition: { address },
         sort: "timestamp"
+    });
+    allBets.forEach(val => {
+        try {
+            val.orders = JSON.parse(val.orders);
+        } catch (e) {
+            val.orders = {};
+        }
     });
 
     const result = [];
@@ -136,10 +143,7 @@ app.route.get("/account/bettings", async function (req) {
     }
 
     const resp = result.slice(offset, offset + limit);
-    return {
-        result: resp,
-        count: result.length
-    };
+    return { result: resp, count: result.length };
 });
 
 app.route.get("/account/crystal", async function (req) {
@@ -151,23 +155,23 @@ app.route.get("/account/crystal", async function (req) {
         throw new Error("cond must in ['0', '1', '2']");
     }
     const likePeriodIds = [];
-    let result = [];
+    let condResult = [];
     const sCond = cond.trim();
     if (sCond === Q_REPORT_LATEAST) {
-        result = getlatest7days();
+        condResult = getlatest7days();
     } else if (sCond === Q_REPORT_CURRENT_WEEK) {
-        result = getcurrentweek();
+        condResult = getcurrentweek();
     } else if (sCond === Q_REPORT_LAST_WEEK) {
-        result = getlastweek();
+        condResult = getlastweek();
     }
-    result.forEach(val => likePeriodIds.push(val + "%"));
+    condResult.forEach(val => likePeriodIds.push(val + "%"));
 
     const allBettings = await app.model.GameBetting.findAll({
         fields: ["tid", "periodId"],
         // condition: { senderId: address, periodId: { $in: likePeriodIds } },
         condition: {
             $and: [{
-                senderId: address
+                address
             }, {
                 $or: likePeriodIds.map(val => {
                     return { periodId: { $like: val } }
@@ -202,7 +206,5 @@ app.route.get("/account/crystal", async function (req) {
         result.push(comb[key]);
     }
     result.sort((a, b) => a > b ? -1 : a == b ? 0 : 1);
-    return {
-        result
-    };
+    return { result };
 });
