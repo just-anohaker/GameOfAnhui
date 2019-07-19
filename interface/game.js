@@ -78,7 +78,7 @@ app.route.get("/game/period_detail", async function (req) {
     return { result };
 });
 
-app.route.get("game/period_bets", async function (req) {
+app.route.get("/game/period_bets", async function (req) {
     const body = req.query;
     const periodId = String(body.periodId || "").trim();
     const addressArg = body.address;
