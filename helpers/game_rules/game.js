@@ -162,8 +162,10 @@ class GameRules {
         });
         allTrs.forEach(tr => {
             let total = bignum("0");
+            let orderTotal = bignum("0");
             const orders = JSON.parse(tr.orders);
             orders.forEach(order => {
+                orderTotal.plus(order.amount);
                 if (self.gameRuleInsts.has(order.mode)) {
                     total = total.plus(self.gameRuleInsts.get(order.mode).settle(periodId, order.point, order.amount, points));
                 } else {
@@ -172,7 +174,8 @@ class GameRules {
             });
             app.sdb.create("GameSettlement", {
                 tid: tr.tid,
-                result: total.lt("0") ? 0 : 1,
+                result: total.lte("0") ? 0 : 1,
+                bet_amount: orderTotal.toString(),
                 amount: total.toString()
             });
             // app.balances.transfer(config.currency, total.toString(), "", tr.address);

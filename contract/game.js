@@ -2,6 +2,8 @@
 
 const Validate = require("validate.js");
 
+const { getStartSlot } = require("../helpers/utils");
+
 module.exports = {
     start_period: async function (periodId) {
         let periodIdChecker;
@@ -58,7 +60,7 @@ module.exports = {
         // TODO:  notify period started
         app.api.dapps.notification({
             event: "start-period",
-            eventData: periodId
+            eventData: { periodId, timestamp: getStartSlot(periodId) }
         }, () => { });
     },
 
@@ -116,7 +118,7 @@ module.exports = {
         // TODO: notify period mothball
         app.api.dapps.notification({
             event: "mothball-period",
-            eventData: periodId
+            eventData: { periodId, timestamp: getStartSlot(periodId) }
         }, () => { });
     },
 
@@ -175,7 +177,7 @@ module.exports = {
         // TODO: notify period end
         app.api.dapps.notification({
             event: "end-period",
-            eventData: { periodId, points, hash }
+            eventData: { periodId, timestamp: getStartSlot(periodId), points, hash }
         }, () => { });
     }
 }

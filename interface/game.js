@@ -1,41 +1,43 @@
 "use strict";
 
-const START_HOUR = 8;
-const START_MINUTE = 40;
+const { getStartSlot, parseOffsetAndLimit } = require("../helpers/utils");
 
-const PERIOD_PER_DURATION_M = 4;
-const PERIOD_PER_DURATION_S = PERIOD_PER_DURATION_M * 60;
-const PERIOD_PER_DURATION_MS = PERIOD_PER_DURATION_S * 1000;
+// const START_HOUR = 8;
+// const START_MINUTE = 40;
 
-function splitPeriodId(periodId) {
-    periodId = periodId ? periodId.trim() : "";
-    const result = /^(\d{4})(\d{2})(\d{2})(\d{3})$/g.exec(periodId);
-    if (result == null) {
-        return null;
-    }
-    const [_, year, month, day, times] = result;
-    return { year, month, day, times };
-}
+// const PERIOD_PER_DURATION_M = 4;
+// const PERIOD_PER_DURATION_S = PERIOD_PER_DURATION_M * 60;
+// const PERIOD_PER_DURATION_MS = PERIOD_PER_DURATION_S * 1000;
 
-function getStartSlot(periodId) {
-    const splitResult = splitPeriodId(periodId);
-    if (splitResult == null) return null;
+// function splitPeriodId(periodId) {
+//     periodId = periodId ? periodId.trim() : "";
+//     const result = /^(\d{4})(\d{2})(\d{2})(\d{3})$/g.exec(periodId);
+//     if (result == null) {
+//         return null;
+//     }
+//     const [_, year, month, day, times] = result;
+//     return { year, month, day, times };
+// }
 
-    let year = Number(splitResult.year);
-    let month = Number(splitResult.month);
-    let date = Number(splitResult.day);
-    let times = Number(splitResult.times);
-    if (!Number.isSafeInteger(year) ||
-        !Number.isSafeInteger(month) ||
-        !Number.isSafeInteger(date) ||
-        !Number.isSafeInteger(times)) {
-        return null;
-    }
+// function getStartSlot(periodId) {
+//     const splitResult = splitPeriodId(periodId);
+//     if (splitResult == null) return null;
 
-    const startTime = new Date(year, month - 1, date, START_HOUR, START_MINUTE);
-    const resultTime = startTime.getTime() + times * PERIOD_PER_DURATION_MS;
-    return resultTime;
-}
+//     let year = Number(splitResult.year);
+//     let month = Number(splitResult.month);
+//     let date = Number(splitResult.day);
+//     let times = Number(splitResult.times);
+//     if (!Number.isSafeInteger(year) ||
+//         !Number.isSafeInteger(month) ||
+//         !Number.isSafeInteger(date) ||
+//         !Number.isSafeInteger(times)) {
+//         return null;
+//     }
+
+//     const startTime = new Date(year, month - 1, date, START_HOUR, START_MINUTE);
+//     const resultTime = startTime.getTime() + times * PERIOD_PER_DURATION_MS;
+//     return resultTime;
+// }
 
 app.route.get("/game/period", async function (req) {
     if (!await app.model.Variable.exists({ key: "lastestPeriod" })) {
@@ -63,16 +65,26 @@ app.route.get("/game/period", async function (req) {
 });
 
 app.route.get("/game/periods", async function (req) {
+    const body = req.query;
+    const condDateTime = body.datetime || "";
+
+    const condition = { status: 2 };
+    if (typeof condDateTime === "string" && condDateTime !== "") {
+        condition.periodId = { $like: condDateTime + "%" };
+    }
+    let [offset, limit] = parseOffsetAndLimit(body.offset || "0", body.limit || "40", 0, 40);
+    if (offset >= limit) offset = 0;
     const periods = await app.model.GamePeriod.findAll({
         fields: ["periodId", "point_sequences", "hash"],
-        condition: { status: 2 },
-        sort: { periodId: -1 }
+        condition,
+        sort: { periodId: -1 },
+        offset,
+        limit
     });
     const result = periods.map(val => {
-        // TODO
         const points = JSON.parse(val.point_sequences);
         val.point_sequences = points.map(val => Number(val));
-        val.startTime = getStartSlot(val.periodId);
+        val.timestamp = getStartSlot(val.periodId);
         return val;
     });
 
@@ -80,15 +92,14 @@ app.route.get("/game/periods", async function (req) {
         result,
         count: result.length
     };
-
 });
 
-app.route.get("/game/information", async function (req) {
-    // TODO
-    throw new Error("[Interface game] /game/information unimplemented.");
-});
+// app.route.get("/game/information", async function (req) {
+//     // TODO
+//     throw new Error("[Interface game] /game/information unimplemented.");
+// });
 
-app.route.get("/game/rules", async function (req) {
-    // TODO
-    throw new Error("[Interface game] /game/rules unimplemented.");
-});
+// app.route.get("/game/rules", async function (req) {
+//     // TODO
+//     throw new Error("[Interface game] /game/rules unimplemented.");
+// });
