@@ -82,7 +82,7 @@ app.route.get("/account/bettings", async function (req) {
     console.log("[interface account] /account/bettings", req.query);
     const body = req.query;
     const address = body.address;
-    const cond = body.cond || Q_BETTING_ALL;     // 0: all, 1: 未开奖, 2: 已中奖, 3: 未中奖
+    const cond = String(body.cond || Q_BETTING_ALL);     // 0: all, 1: 未开奖, 2: 已中奖, 3: 未中奖
     if (![Q_BETTING_ALL, Q_BETTING_UNEND, Q_BETTING_WIN, Q_BETTING_LOSE].includes(cond.trim())) {
         throw new Error("cond must in ['0', '1', '2', '3']");
     }
@@ -135,7 +135,7 @@ app.route.get("/account/bettings", async function (req) {
         }
     }
 
-    const resp = result.slice(offset, limit);
+    const resp = result.slice(offset, offset + limit);
     return {
         result: resp,
         count: result.length
@@ -146,7 +146,7 @@ app.route.get("/account/crystal", async function (req) {
     console.log("[interface account] /account/crystal:", req.query);
     const body = req.query;
     const address = body.address;
-    const cond = body.cond || Q_REPORT_LATEAST;
+    const cond = String(body.cond || Q_REPORT_LATEAST);
     if (![Q_REPORT_LATEAST, Q_REPORT_CURRENT_WEEK, Q_REPORT_LAST_WEEK].includes(cond.trim())) {
         throw new Error("cond must in ['0', '1', '2']");
     }

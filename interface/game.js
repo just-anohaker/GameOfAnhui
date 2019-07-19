@@ -66,7 +66,7 @@ app.route.get("/game/period", async function (req) {
 
 app.route.get("/game/periods", async function (req) {
     const body = req.query;
-    const condDateTime = body.datetime || "";
+    const condDateTime = String(body.datetime || "");
 
     const condition = { status: 2 };
     if (typeof condDateTime === "string" && condDateTime !== "") {
@@ -78,8 +78,8 @@ app.route.get("/game/periods", async function (req) {
         fields: ["periodId", "point_sequences", "hash"],
         condition,
         sort: { periodId: -1 },
-        offset,
-        limit
+        // offset,
+        // limit
     });
     const result = periods.map(val => {
         const points = JSON.parse(val.point_sequences);
@@ -87,6 +87,7 @@ app.route.get("/game/periods", async function (req) {
         val.timestamp = getStartSlot(val.periodId);
         return val;
     });
+    const resp = result.slice(offset, offset + limit);
 
     return {
         result,
