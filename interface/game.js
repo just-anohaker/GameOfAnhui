@@ -73,7 +73,7 @@ app.route.get("/game/periods", async function (req) {
         condition.periodId = { $like: condDateTime + "%" };
     }
     let [offset, limit] = parseOffsetAndLimit(body.offset || "0", body.limit || "40", 0, 40);
-    if (offset >= limit) offset = 0;
+    // if (offset >= limit) offset = 0;
     const periods = await app.model.GamePeriod.findAll({
         fields: ["periodId", "point_sequences", "hash"],
         condition,

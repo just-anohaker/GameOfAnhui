@@ -89,7 +89,7 @@ app.route.get("/account/bettings", async function (req) {
         throw new Error("cond must in ['0', '1', '2', '3']");
     }
     let [offset, limit] = parseOffsetAndLimit(body.offset || "0", body.limit || "100", 0, 100);
-    if (offset >= limit) offset = 0;
+    // if (offset >= limit) offset = 0;
 
     // 查询指定地址的所有下注记录
     const allBets = await app.model.GameBetting.findAll({
