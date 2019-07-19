@@ -64,15 +64,14 @@ app.route.get("/game/period_detail", async function (req) {
         throw new Error("periodId is unavailable");
     }
 
+    const result = [];
     const period = await app.model.GamePeriod.findOne({
         fields: ["periodId", "begin_tid", "mothball_tid", "end_tid", "status", "point_sequences", "hash"],
-        condition: { periodId }
+        condition: { periodId, status: 2 }
     });
-    period.forEach(val => {
-        val.point_sequences = JSON.parse(val.point_sequences);
-    });
-
-    return {
-        result: period
-    };
+    if (period) {
+        period.point_sequences = JSON.parse(period.point_sequences);
+        result.push(period);
+    }
+    return { result };
 });
