@@ -197,7 +197,7 @@ app.route.get("/account/crystal", async function (req) {
         const { year, month, day } = splitPeriodId(periodId);
         const datetime = `${year}${month}${day}`;
         const result = comb[datetime] || { datetime, bet_amount: "0", settlement: "0" };
-        result.bet_amount = bignum(result.bet_amount).plus(amount);
+        result.bet_amount = bignum(result.bet_amount).plus(amount).toString();
         result.settlement = bignum(result.settlement).plus(val.amount).sub(amount).toString();
 
         comb[datetime] = result;
