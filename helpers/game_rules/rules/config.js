@@ -58,6 +58,7 @@ module.exports = {
         Point56: "56"           // 点数5、6
     },
     Rule5: {
+        /// mode: 5 - 短牌
         Point11: "11",          // 点数1、1
         Point22: "22",          // 点数2、2
         Point33: "33",          // 点数3、3

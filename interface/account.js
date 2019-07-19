@@ -65,14 +65,22 @@ function getlastweek() {
 
 app.route.get("/account/chain_balance", async function (req) {
     console.log("[interface account] /account/chain_balance:", req.query);
-    const resp = await global.PIFY(app.api.accounts.getBalance)(req.query.address);
+    const address = String(req.query.address || "").trim();
+    if (address === "") {
+        throw new Error("address must be an available address");
+    }
+    const resp = await global.PIFY(app.api.accounts.getBalance)(address);
     console.log("[interface account] get chain_balance:", resp.balance);
     return { balance: resp.balance.toString() };
 });
 
 app.route.get("/account/game_balance", async function (req) {
     console.log("[interface account] /account/game_balance:", req.query);
-    const resp = app.balances.get(req.query.address, config.currency);
+    const address = String(req.query.address || "").trim();
+    if (address === "") {
+        throw new Error("address must be an available address");
+    }
+    const resp = app.balances.get(address, config.currency);
     console.log("[interface account] get game_balance:", resp.toString());
     return { balance: resp.toString() };
 });
@@ -80,7 +88,10 @@ app.route.get("/account/game_balance", async function (req) {
 app.route.get("/account/bettings", async function (req) {
     console.log("[interface account] /account/bettings", req.query);
     const body = req.query;
-    const address = body.address;
+    const address = String(body.address || "").trim();
+    if (address === "") {
+        throw new Error("address must be an available address");
+    }
     const cond = String(body.cond || Q_BETTING_ALL);     // 0: all, 1: 未开奖, 2: 已中奖, 3: 未中奖
     if (![Q_BETTING_ALL, Q_BETTING_UNEND, Q_BETTING_WIN, Q_BETTING_LOSE].includes(cond.trim())) {
         throw new Error("cond must in ['0', '1', '2', '3']");
@@ -147,7 +158,10 @@ app.route.get("/account/bettings", async function (req) {
 app.route.get("/account/crystal", async function (req) {
     console.log("[interface account] /account/crystal:", req.query);
     const body = req.query;
-    const address = body.address;
+    const address = String(body.address || "");
+    if (address === "") {
+        throw new Error("address must be an available address");
+    }
     const cond = String(body.cond || Q_REPORT_LATEAST);
     if (![Q_REPORT_LATEAST, Q_REPORT_CURRENT_WEEK, Q_REPORT_LAST_WEEK].includes(cond.trim())) {
         throw new Error("cond must in ['0', '1', '2']");

@@ -1,5 +1,7 @@
 "use strict";
 
+const bignum = require("bignumber");
+
 const { getStartSlot, parseOffsetAndLimit } = require("../helpers/utils");
 
 app.route.get("/game/period", async function (req) {
@@ -29,7 +31,7 @@ app.route.get("/game/period", async function (req) {
 
 app.route.get("/game/periods", async function (req) {
     const body = req.query;
-    const condDateTime = String(body.datetime || "");
+    const condDateTime = String(body.datetime || "").trim();
 
     const condition = { status: 2 };
     if (typeof condDateTime === "string" && condDateTime !== "") {
@@ -59,7 +61,7 @@ app.route.get("/game/periods", async function (req) {
 
 app.route.get("/game/period_detail", async function (req) {
     const body = req.query;
-    const periodId = String(body.periodId || "");
+    const periodId = String(body.periodId || "").trim();
     if (periodId === "") {
         throw new Error("periodId is unavailable");
     }
@@ -73,5 +75,72 @@ app.route.get("/game/period_detail", async function (req) {
         period.point_sequences = JSON.parse(period.point_sequences);
         result.push(period);
     }
+    return { result };
+});
+
+app.route.get("game/period_bets", async function (req) {
+    const body = req.query;
+    const periodId = String(body.periodId || "").trim();
+    const addressArg = body.address;
+    if (periodId === "") {
+        throw new Error("period is unavailable");
+    }
+
+    let address = null;
+    if (addressArg) {
+        const s = String(addressArg || "").trim();
+        if (s === "") {
+            throw new Error("address must be an available address");
+        }
+        address = s;
+    }
+
+    let [offset, limit] = parseOffsetAndLimit(body.offset || "0", body.limit || "100");
+
+    const result = { periodId };
+    const period = await app.model.GamePeriod.findOne({
+        fields: ["point_sequences"],
+        condition: { periodId, status: 2 }
+    });
+    if (period) {
+        result.points = JSON.parse(period.point_sequences);
+
+        const bettingCond = { periodId };
+        if (address) {
+            bettingCond.address = address;
+        }
+        const bettings = await app.model.GameBetting.findAll({
+            fields: ["tid", "address", "orders"],
+            condition: bettingCond
+        });
+        const tids = bettings.map(val => val.tid);
+        const settlements = await app.model.GameSettlement.findAll({
+            fields: ["tid", "amount"],
+            condition: { tid: { $in: tids } }
+        });
+        const settlementsMap = new Map();
+        settlements.forEach(val => settlementsMap.set(val.tid, val));
+
+        const bets = [];
+        bettings.forEach(val => {
+            const r = { tid: val.tid, address: val.address, orders: JSON.parse(val.orders) };
+            let betAmount = bignum("0");
+            r.orders.forEach(val => {
+                betAmount = betAmount.plus(val.amount);
+            });
+            r.bet_amount = betAmount.toString();
+
+            const settlement = settlementsMap.get(val.tid);
+            if (settlement) {
+                let settle = bignum(settlement.amount);
+                settle = settle.sub(r.bet_amount);
+                r.settle_amount = settle.toString();
+            }
+            bets.push(r);
+        });
+        result.bets = bets.slice(offset, offset + limit);
+        result.count = bets.length;
+    }
+
     return { result };
 });
