@@ -1,5 +1,7 @@
 "use strict";
 
+const bignum = require("bignumber");
+
 const config = require("../helpers/config");
 
 const { splitPeriodId, parseOffsetAndLimit } = require("../helpers/utils");
@@ -12,11 +14,11 @@ const ONE_DAY_TIME = 24 * 60 * 60 * 1000;
 
 function getDateTime(timestamp) {
     const date = new Date(timestamp);
-    const year = date.getFullYear();
-    const month = date.getMonth();
-    const days = date.getDate();
+    const year = date.getFullYear().toString().padStart(4, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const days = date.getDate().toString().padStart(2, "0");
 
-    return `${year}${month + 1}${days}`;
+    return `${year}${month}${days}`;
 }
 
 function getlatest7days() {
@@ -59,7 +61,7 @@ function getlastweek() {
     const newstart = start - (day + 1) * ONE_DAY_TIME;
     const result = [];
     for (let i = 0; i < 7; i++) {
-        result.push(getDateTime(start - i * ONE_DAY_TIME));
+        result.push(getDateTime(newstart - i * ONE_DAY_TIME));
     }
     return result;
 }
@@ -165,39 +167,38 @@ app.route.get("/account/crystal", async function (req) {
         condResult = getlastweek();
     }
     condResult.forEach(val => likePeriodIds.push(val + "%"));
+    const allBettings = [];
+    for (let i = 0; i < likePeriodIds.length; i++) {
+        const condition = { address, periodId: { $like: likePeriodIds[i] } };
+        const resp = await app.model.GameBetting.findAll({
+            fields: ["tid", "timestamp", "periodId", "orders"],
+            condition,
+            sort: "timestamp"
+        });
+        resp.forEach(val => allBettings.push(val));
+    }
 
-    const allBettings = await app.model.GameBetting.findAll({
-        fields: ["tid", "periodId"],
-        // condition: { senderId: address, periodId: { $in: likePeriodIds } },
-        condition: {
-            $and: [{
-                address
-            }, {
-                $or: likePeriodIds.map(val => {
-                    return { periodId: { $like: val } }
-                })
-            }]
-        },
-        sort: "timestamp"
-    });
     const availableTids = allBettings.map(val => val.tid);
     const periodAndTidMap = new Map();
-    allBettings.forEach(val => periodAndTidMap.set(val.tid, val.periodId));
+    allBettings.forEach(val => {
+        const orders = JSON.parse(val.orders);
+        const orderTotal = bignum("0");
+        orders.forEach(order => orderTotal.plus(order.amount));
+        periodAndTidMap.set(val.tid, { periodId: val.periodId, amount: orderTotal.toString() })
+    });
 
     const comb = {};
     const allSettlement = await app.model.GameSettlement.findAll({
-        // fields: ["tid", "result", "bet_amount", "amount"],
         fields: ["tid", "result", "amount"],
         condition: { tid: { $in: availableTids } }
     });
     allSettlement.forEach(val => {
-        const periodId = periodAndTidMap.get(val.tid);
+        const { periodId, amount } = periodAndTidMap.get(val.tid);
         const { year, month, day } = splitPeriodId(periodId);
         const datetime = `${year}${month}${day}`;
         const result = comb[datetime] || { datetime, bet_amount: "0", settlement: "0" };
-        // TODO
-        // result.bet_amount = bignum(result.bet_amount).plus(val.bet_amount);
-        result.settlement = bignum(result.settlement).plus(val.amount);
+        result.bet_amount = bignum(result.bet_amount).plus(amount);
+        result.settlement = bignum(result.settlement).plus(val.amount).sub(amount).toString();
 
         comb[datetime] = result;
     });
