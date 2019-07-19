@@ -3,13 +3,10 @@
 const bignum = require("bignumber");
 
 const config = require("../helpers/config");
-
 const { splitPeriodId, parseOffsetAndLimit } = require("../helpers/utils");
 
 const Q_BETTING_ALL = "0", Q_BETTING_UNEND = "1", Q_BETTING_WIN = "2", Q_BETTING_LOSE = "3";
-
 const Q_REPORT_LATEAST = "0", Q_REPORT_CURRENT_WEEK = "1", Q_REPORT_LAST_WEEK = "2";
-
 const ONE_DAY_TIME = 24 * 60 * 60 * 1000;
 
 function getDateTime(timestamp) {
@@ -89,7 +86,6 @@ app.route.get("/account/bettings", async function (req) {
         throw new Error("cond must in ['0', '1', '2', '3']");
     }
     let [offset, limit] = parseOffsetAndLimit(body.offset || "0", body.limit || "100", 0, 100);
-    // if (offset >= limit) offset = 0;
 
     // 查询指定地址的所有下注记录
     const allBets = await app.model.GameBetting.findAll({

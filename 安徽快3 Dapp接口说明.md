@@ -123,5 +123,31 @@ data: {
 
 
 
+## 随机源信息获取
 
+随机源域名：http://47.111.165.42:4567
+
+
+
+获取产生Hash的数据源
+
+![image-20190719135339374](/Users/anohaker/Library/Application Support/typora-user-images/image-20190719135339374.png)
+
+### (GET)/random/getInfo
+
+***参数***
+
+| 字段 | 类型   | 说明                                                 |
+| ---- | ------ | ---------------------------------------------------- |
+| hash | String | 需要查询的hash值，即每一个period结束时获取到的hash值 |
+
+***返回值***
+
+| 字段       | 类型                                | 说明                                                |
+| ---------- | ----------------------------------- | --------------------------------------------------- |
+| random     | String                              | 随机数hex字符串值                                   |
+| index      | number                              | 随机数index索引值                                   |
+| hashes     | Array<{id: string, height: number}> | 计算随机数用到的区块信息id:区块Id，height：区块高度 |
+| iter       | number                              | 迭代次数                                            |
+| sha256iter | Number                              | sha256计算迭代次数                                  |
 
