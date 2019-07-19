@@ -87,10 +87,9 @@ app.route.get("/game/periods", async function (req) {
         val.timestamp = getStartSlot(val.periodId);
         return val;
     });
-    const resp = result.slice(offset, offset + limit);
 
     return {
-        result,
+        result: result.slice(offset, offset + limit),
         count: result.length
     };
 });
