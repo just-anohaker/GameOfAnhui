@@ -182,8 +182,8 @@ app.route.get("/account/crystal", async function (req) {
     const periodAndTidMap = new Map();
     allBettings.forEach(val => {
         const orders = JSON.parse(val.orders);
-        const orderTotal = bignum("0");
-        orders.forEach(order => orderTotal.plus(order.amount));
+        let orderTotal = bignum("0");
+        orders.forEach(order => orderTotal = orderTotal.plus(order.amount));
         periodAndTidMap.set(val.tid, { periodId: val.periodId, amount: orderTotal.toString() })
     });
 
