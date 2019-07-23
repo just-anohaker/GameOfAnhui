@@ -1,5 +1,5 @@
 "use strict";
 
 module.exports = {
-    currency: "AnHui_Kuai3"
+    currency: "ETM"
 }

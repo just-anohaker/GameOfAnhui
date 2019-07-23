@@ -1,11 +1,7 @@
 "use strict";
 
 const GameRules = require("./helpers/game_rules/game");
-
 const config = require("./helpers/config");
-
-const Rule = require("./helpers/game_rules/rules/base_rule");
-
 const BeforeCreateBlockHook = require("./helpers/before-create-block-hook");
 
 module.exports = async function () {
@@ -20,6 +16,11 @@ module.exports = async function () {
 
     // set game default currency
     app.setDefaultFee(config.currency, "10000000");
+
+    // disable deposit, withdrawal, transfer Fee
+    app.registerFee(1, 0);
+    app.registerFee(2, 0);
+    app.registerFee(3, 0);
 
     // model cache
     app.sdb.load("GameReward", ["periodId", "amount"], [["periodId"]]);
