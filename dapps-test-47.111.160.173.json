@@ -1,0 +1,33 @@
+{
+    "success": true,
+    "transaction": {
+        "type": 5,
+        "amount": 0,
+        "senderPublicKey": "7e09188d4288ddaea2a02c6f2cacd567d7653db8fce35a56001faa20dcb49889",
+        "requesterPublicKey": null,
+        "timestamp": 24502829,
+        "asset": {
+            "dapp": {
+                "category": 9,
+                "name": "DappOfAnHui_Kuai3",
+                "description": "An Hui Kuai 3",
+                "tags": "entanmo dapp anhui_kuai3",
+                "type": 0,
+                "link": "https://github.com/just-anohaker/GameOfAnhui/archive/v1.0.0.zip",
+                "delegates": [
+                    "55599b72e3c3b5de4c9b7c88805924c70ebc157132093ff4a9aab753482a882b",
+                    "eeed333bc83bb680b4a23fbde75221eccec7e2bd63caf596b0f89cbeb47da254",
+                    "99c22c0d62791a70a8bcae24aa7e5f6fd2cbacfc0080f291a7cbd8ee2f9c7c1e",
+                    "81fe00e3ec7508b528b30b39fb53037169730a7298ef508504014c98793f9d8b",
+                    "44e689c16ff4597d27dff6a86efd50a98a1c5853b255444fb76066673b86066e"
+                ],
+                "unlockDelegates": 3
+            }
+        },
+        "recipientId": null,
+        "signature": "f721ad2b32387190371489fea3233a77570be7b806bd932aeb8a96917bfaf7dbffa30ef60f1038e14076d0ddf746295777f80301627cd913c8da3e7efdd47d0e",
+        "id": "5c611b50ac47e136ffc10926895fffec7c32f25d32c2692abb471e250caaebf0",
+        "fee": 10000000000,
+        "senderId": "A5GfRnWWBZL5EAQMQvpfmhJP65J3rTaW2Z"
+    }
+}

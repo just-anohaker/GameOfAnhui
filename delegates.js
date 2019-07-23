@@ -1,3 +1,4 @@
+// 代理人列表
 const delegates = [{
   address: 'ABdJeu3dejMAo7bxXh6fiak3A4LSAcE1hT',
   secret:
@@ -34,6 +35,7 @@ const delegates = [{
     '44e689c16ff4597d27dff6a86efd50a98a1c5853b255444fb76066673b86066e'
 }]
 
+// 创世块出块人
 const genesisAccount = [{
   address: 'A5AbJXqZtx5R9xEnU6cS4KpGGq4cAAUyxX',
   secret:
@@ -42,6 +44,7 @@ const genesisAccount = [{
     'c28b158cc19344dd3fa562f7655db62d75423570630e20315d1f20d88abdd324'
 }]
 
+// dapp交易创建人，启动器人
 const createAccount = [{
   address: 'A5GfRnWWBZL5EAQMQvpfmhJP65J3rTaW2Z',
   secret:
@@ -70,3 +73,5 @@ const TestAccount = [
 ]
 
 const devDappId = "81961c799bf3f47652e7bab01d4e8437134374a7a114cfab1e89621bf644ca89";
+
+
